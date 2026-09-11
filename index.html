@@ -55,7 +55,20 @@ hr{border:0;border-top:1px solid var(--line);margin:14px 0}
 <main>
 <section id="motor" class="tab active">
  <div class="card">
-  <div class="row"><h2>Motor Yield & Slide</h2><span class="kicker">PRINCIPAL</span></div>
+  <div class="row">
+<section id="checklists-panel" class="panel" style="display:block">
+  <div class="card">
+    <div class="section-title">CHECKLISTS / PENDIENTES</div>
+    <div class="sub">Crea listas para tus tareas de campo. Los datos quedan guardados en este dispositivo.</div>
+    <div class="row" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+      <input id="newListName" placeholder="Nombre de la lista" style="flex:1;min-width:190px">
+      <button id="addListBtn">＋ Crear lista</button>
+    </div>
+  </div>
+  <div id="listsContainer"></div>
+</section>
+
+<h2>Motor Yield & Slide</h2><span class="kicker">PRINCIPAL</span></div>
   <div class="redline"></div>
   <div class="sub">La lógica principal corresponde al Excel Motor_Yield_Slide_Calculator_v1: Yield = DLS realizado ÷ (slide/100).</div>
   <div class="grid">
@@ -528,61 +541,119 @@ renderCL();setInterval(checkCL,60000);
 
 <script>
 (function(){
-  const JVNotif = {
-    supported: ('Notification' in window),
-    async request(){
-      if(!this.supported) return 'unsupported';
-      try { return await Notification.requestPermission(); }
-      catch(e){ return 'denied'; }
-    },
-    show(title, body){
-      if(!this.supported || Notification.permission !== 'granted') return false;
-      try {
-        new Notification(title, { body: body, icon: 'icon-192.png', tag: 'jv-field-task' });
-        return true;
-      } catch(e) { return false; }
-    }
-  };
-  window.JVNotif = JVNotif;
+  const KEY='jv_drilling_checklists_v51';
+  let state = {lists:[]};
 
-  // Make a notification button available from the app without changing
-  // the existing checklist UI structure.
-  document.addEventListener('click', async function(e){
-    const el = e.target.closest('[data-enable-notifications]');
-    if(!el) return;
-    const result = await JVNotif.request();
-    el.textContent = result === 'granted'
-      ? '🔔 NOTIFICACIONES ACTIVADAS'
-      : '🔕 NOTIFICACIONES NO DISPONIBLES';
+  function load(){
+    try { state=JSON.parse(localStorage.getItem(KEY)||'{"lists":[]}'); }
+    catch(e){ state={lists:[]}; }
+    if(!Array.isArray(state.lists)) state.lists=[];
+  }
+  function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
+
+  function esc(s){
+    return String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function render(){
+    const root=document.getElementById('listsContainer');
+    if(!root) return;
+    if(!state.lists.length){
+      root.innerHTML='<div class="card" style="margin-top:12px"><div class="sub">No hay listas todavía. Crea tu primera lista arriba.</div></div>';
+      return;
+    }
+    root.innerHTML=state.lists.map((l,li)=>{
+      const done=l.tasks.filter(t=>t.done).length;
+      return `<div class="card checklist-card" style="margin-top:12px">
+        <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
+          <div><strong>${esc(l.name)}</strong><div class="sub">${done}/${l.tasks.length} completados</div></div>
+          <button data-del-list="${li}" title="Eliminar lista">🗑️</button>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+          <input data-task-input="${li}" placeholder="Nuevo pendiente" style="flex:1;min-width:190px">
+          <input data-task-time="${li}" type="datetime-local" title="Recordatorio">
+          <button data-add-task="${li}">＋ Agregar</button>
+        </div>
+        <div style="margin-top:10px">
+          ${l.tasks.map((t,ti)=>`
+            <div style="display:flex;gap:8px;align-items:center;padding:8px 0;border-top:1px solid rgba(255,255,255,.12)">
+              <input type="checkbox" data-done="${li}:${ti}" ${t.done?'checked':''}>
+              <div style="flex:1;${t.done?'text-decoration:line-through;opacity:.55':''}">
+                ${esc(t.text)}
+                ${t.reminderAt?`<div class="sub">🔔 ${new Date(t.reminderAt).toLocaleString()}</div>`:''}
+              </div>
+              <button data-del-task="${li}:${ti}">✕</button>
+            </div>`).join('')}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function addList(){
+    const inp=document.getElementById('newListName');
+    const name=(inp?.value||'').trim();
+    if(!name) return;
+    state.lists.push({name,tasks:[]}); save(); inp.value=''; render();
+  }
+
+  function addTask(li){
+    const inp=document.querySelector(`[data-task-input="${li}"]`);
+    const time=document.querySelector(`[data-task-time="${li}"]`);
+    const txt=(inp?.value||'').trim();
+    if(!txt) return;
+    state.lists[li].tasks.push({text:txt,done:false,reminderAt:time?.value||null});
+    save(); render();
+  }
+
+  document.addEventListener('click',e=>{
+    const a=e.target.closest('#addListBtn'); if(a) return addList();
+    const b=e.target.closest('[data-add-task]'); if(b) return addTask(+b.dataset.addTask);
+    const dl=e.target.closest('[data-del-list]'); if(dl){
+      const i=+dl.dataset.delList;
+      if(confirm('¿Eliminar esta lista y todos sus pendientes?')){state.lists.splice(i,1);save();render();}
+    }
+    const dt=e.target.closest('[data-del-task]'); if(dt){
+      const [li,ti]=dt.dataset.delTask.split(':').map(Number);
+      state.lists[li].tasks.splice(ti,1);save();render();
+    }
   });
 
-  // Check due reminders periodically while the app is open.
-  setInterval(function(){
-    try {
-      const raw = localStorage.getItem('jv_field_tools_state');
-      if(!raw) return;
-      const state = JSON.parse(raw);
-      const now = new Date();
-      const key = now.toISOString().slice(0,16);
-      const tasks = [];
-      (state.lists || []).forEach(list => {
-        (list.tasks || []).forEach(task => {
-          if(task.done || !task.reminderAt) return;
-          const d = new Date(task.reminderAt);
-          if(Math.abs(d.getTime() - now.getTime()) < 60000) {
-            tasks.push(task.text || task.title || 'Pendiente');
-          }
-        });
-      });
-      tasks.forEach(t => {
-        const sentKey = 'jv_notified_' + key + '_' + t;
-        if(localStorage.getItem(sentKey)) return;
-        localStorage.setItem(sentKey, '1');
-        JVNotif.show('JV DRILLING • Pendiente', t);
-        if(document.visibilityState === 'visible') alert('🔔 JV DRILLING\n\nPendiente: ' + t);
-      });
-    } catch(e){}
-  }, 30000);
+  document.addEventListener('change',e=>{
+    const d=e.target.closest('[data-done]'); if(!d) return;
+    const [li,ti]=d.dataset.done.split(':').map(Number);
+    state.lists[li].tasks[ti].done=d.checked; save(); render();
+  });
+
+  load(); render();
+
+  // Notification permission helper; scheduled delivery while the app is open.
+  window.JVChecklistNotifications = {
+    async enable(){
+      if(!('Notification' in window)) return 'unsupported';
+      return await Notification.requestPermission();
+    }
+  };
+})();
+</script>
+
+
+<script>
+(function(){
+  function showChecklist(){
+    const p=document.getElementById('checklists-panel');
+    if(!p) return;
+    document.querySelectorAll('.panel').forEach(x=>{ if(x!==p) x.style.display='none'; });
+    p.style.display='block';
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  document.addEventListener('click',function(e){
+    const t=e.target.closest('button,a');
+    if(!t) return;
+    if(/checklist/i.test((t.textContent||'').trim())){
+      e.preventDefault(); e.stopPropagation(); showChecklist();
+    }
+  },true);
+  window.addEventListener('load',showChecklist);
 })();
 </script>
 
