@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>JV Drilling • Field Tools v5.1</title>
+<title>JV Drilling • Field Tools v5.2</title>
 <style>
 :root{--red:#d71920;--red2:#a90f15;--black:#111317;--dark:#1a1d22;--gray:#69717d;--line:#dfe2e6;--bg:#f3f4f6;--card:#fff;--green:#137333;--amber:#a45b00}
 *{box-sizing:border-box}
@@ -45,13 +45,13 @@ hr{border:0;border-top:1px solid var(--line);margin:14px 0}
 .cl-main{flex:1;min-width:0}.cl-name{font-weight:800;font-size:14px;word-break:break-word}.cl-meta{font-size:10px;color:#747b85;margin-top:4px}
 .cl-del{background:none!important;color:#999!important;border:0!important;padding:4px!important;font-size:20px!important}
 .cl-empty{text-align:center;color:#777;padding:22px 8px;font-size:12px}
-.cl-summary{font-size:11px;color:#69717d;margin-top:4px}
+.cl-summary{font-size:11px;color:#69717d;margin-top:4px}.cl-collapse{border:1px solid var(--line);border-radius:14px;background:#fff;margin:11px 0;box-shadow:0 2px 8px #00000008;overflow:hidden}.cl-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:14px 15px}.cl-head-main{min-width:0;flex:1}.cl-body{padding:0 15px 15px}.cl-chevron{font-size:16px;font-weight:900;color:#69717d;min-width:34px}.cl-collapse.collapsed .cl-body{display:none}.cl-collapse.collapsed .redline{display:none}.cl-collapse.collapsed .cl-chevron{transform:rotate(-90deg)}
 
 </style>
 </head>
 <body>
 <header>
- <div class="brand"><div class="logo">JV</div><div><b>JV DRILLING</b><span>Motor Yield • Directional Field Tools</span></div></div>
+ <div class="brand"><div class="logo">JV</div><div><b>JV DRILLING</b><span>Motor Yield • RFO • Directional Field Tools</span></div></div>
 </header>
 
 <main>
@@ -67,25 +67,30 @@ hr{border:0;border-top:1px solid var(--line);margin:14px 0}
   </div>
  </div>
 
- <div class="card">
-  <h2>Nuevo pendiente</h2>
-  <div class="grid">
-   <div><label>Checklist</label><select id="taskList"><option value="">Crea primero un checklist</option></select></div>
-   <div><label>Pendiente</label><input id="taskName" placeholder="Ej. Verificar TF antes del slide"></div>
+ <div class="cl-collapse" id="newTaskPanel">
+  <div class="cl-head">
+   <div class="cl-head-main"><h2 style="margin:0">Nuevo pendiente</h2><div class="cl-summary">Toca para expandir y agregar un pendiente</div></div>
+   <button class="light" id="toggleNewTask" type="button">Expandir</button>
   </div>
-  <div class="grid" style="margin-top:10px">
-   <div><label>Recordatorio</label>
-    <select id="remType">
-     <option value="none">Sin recordatorio</option>
-     <option value="daily">Diario</option>
-     <option value="weekly">Semanal (lunes)</option>
-     <option value="once">Una vez</option>
-    </select>
+  <div class="cl-body">
+   <div class="grid">
+    <div><label>Checklist</label><select id="taskList"><option value="">Crea primero un checklist</option></select></div>
+    <div><label>Pendiente</label><input id="taskName" placeholder="Ej. Verificar TF antes del slide"></div>
    </div>
-   <div><label>Hora</label><input id="remTime" type="time"></div>
+   <div class="grid" style="margin-top:10px">
+    <div><label>Recordatorio</label>
+     <select id="remType">
+      <option value="none">Sin recordatorio</option>
+      <option value="daily">Diario</option>
+      <option value="weekly">Semanal (lunes)</option>
+      <option value="once">Una vez</option>
+     </select>
+    </div>
+    <div><label>Hora</label><input id="remTime" type="time"></div>
+   </div>
+   <div style="margin-top:10px"><label>Fecha (solo "Una vez")</label><input id="remDate" type="date"></div>
+   <button class="action" id="addTask" style="width:100%;margin-top:10px">＋ Agregar pendiente</button>
   </div>
-  <div style="margin-top:10px"><label>Fecha (solo "Una vez")</label><input id="remDate" type="date"></div>
-  <button class="action" id="addTask" style="width:100%;margin-top:10px">＋ Agregar pendiente</button>
  </div>
 
  <div id="listsArea"></div>
@@ -226,20 +231,52 @@ hr{border:0;border-top:1px solid var(--line);margin:14px 0}
  </div>
 </section>
 
-<section id="toolface" class="tab">
+<section id="rfo" class="tab">
  <div class="card">
-  <div class="row"><h2>Toolface Quick Calc</h2><span class="kicker">TF</span></div>
+  <div class="row"><h2>RFO • Rig Floor Offset</h2><span class="kicker">RFO</span></div>
   <div class="redline"></div>
+  <div class="sub">Calcula el offset lineal sobre la circunferencia a partir del ángulo visual. También puedes corroborarlo usando una medición física alrededor de la herramienta.</div>
   <div class="grid">
-   <div><label>Gravitational TF (°)</label><input id="gTF" type="number" step="0.1"></div>
-   <div><label>Magnetic TF (°)</label><input id="mTF" type="number" step="0.1"></div>
+   <div><label>Ángulo visual (°)</label><input id="rfoAngle" type="number" step="0.01" inputmode="decimal" placeholder="Ej. 60"></div>
+   <div><label>Circunferencia / referencia (in)</label><input id="rfoCirc" type="number" step="0.01" inputmode="decimal" placeholder="Ej. 807"></div>
   </div>
-  <div class="out"><div class="lbl">Diferencia Magnetic − Gravity</div><div id="tfDiff" class="val">—</div><div class="unit">° (shortest path)</div></div>
+  <button class="action" style="margin-top:10px;width:100%" id="rfoBtn">Calcular RFO</button>
+  <div class="out red"><div class="lbl">RFO</div><div id="rfoResult" class="val">—</div><div class="unit">unidades de arco sobre la circunferencia</div></div>
+  <div class="note">Fórmula: RFO = Circunferencia × Ángulo / 360°. Ejemplo de tu hoja: 807 × 61.79° / 360° ≈ 138.51 (con las cifras de la hoja).</div>
+ </div>
+
+ <div class="card">
+  <div class="row"><h2>Corroborar RFO</h2><span class="kicker">CHECK</span></div>
+  <div class="redline"></div>
+  <div class="sub">Ingresa la distancia medida sobre la circunferencia y la circunferencia total. La app obtiene el ángulo equivalente y compara el RFO.</div>
   <div class="grid">
-   <div><label>TF deseado para slide (°)</label><input id="desiredTF" type="number" step="0.1"></div>
-   <div class="out red"><div class="lbl">TF seleccionado</div><div id="tfSelected" class="val">—</div><div class="unit">°</div></div>
+   <div><label>Medición de arco (misma unidad)</label><input id="rfoArc" type="number" step="0.01" inputmode="decimal" placeholder="Ej. 167"></div>
+   <div><label>Circunferencia total (misma unidad)</label><input id="rfoCheckCirc" type="number" step="0.01" inputmode="decimal" placeholder="Ej. 973"></div>
   </div>
-  <div class="note">El TF seleccionado es el valor que tú ingresas como objetivo de slide; la diferencia magnética/gravedad se muestra por separado.</div>
+  <button class="action" style="margin-top:10px;width:100%" id="rfoCheckBtn">Corroborar</button>
+  <div class="grid">
+   <div class="out"><div class="lbl">Ángulo corroborado</div><div id="rfoCheckAngle" class="val">—</div><div class="unit">°</div></div>
+   <div class="out green"><div class="lbl">RFO corroborado</div><div id="rfoCheckResult" class="val">—</div><div class="unit">in</div></div>
+  </div>
+  <div id="rfoCheckStatus" class="status on">—</div>
+ </div>
+
+ <div class="card">
+  <div class="row"><h2>UBHO</h2><span class="kicker">OPTION</span></div>
+  <div class="redline"></div>
+  <div class="sub">Agrega el UBHO como referencia adicional. Puedes calcular su offset desde un ángulo y, si lo deseas, sumarlo al RFO principal.</div>
+  <button class="light" id="toggleUBHO" type="button" style="width:100%">＋ Agregar / mostrar UBHO</button>
+  <div id="ubhoPanel" style="display:none;margin-top:12px">
+   <div class="grid">
+    <div><label>UBHO ángulo (°)</label><input id="ubhoAngle" type="number" step="0.01" inputmode="decimal" placeholder="Ej. 60"></div>
+    <div><label>UBHO circunferencia (misma unidad)</label><input id="ubhoCirc" type="number" step="0.01" inputmode="decimal" placeholder="Ej. 807"></div>
+   </div>
+   <button class="action" style="margin-top:10px;width:100%" id="ubhoBtn">Calcular UBHO</button>
+   <div class="grid">
+    <div class="out"><div class="lbl">UBHO RFO</div><div id="ubhoResult" class="val">—</div><div class="unit">misma unidad</div></div>
+    <div class="out red"><div class="lbl">RFO total</div><div id="rfoTotal" class="val">—</div><div class="unit">misma unidad</div></div>
+   </div>
+  </div>
  </div>
 </section>
 
@@ -257,7 +294,7 @@ hr{border:0;border-top:1px solid var(--line);margin:14px 0}
  <button data-tab="motor"><i>◉</i>Motor</button>
  <button data-tab="tally"><i>▤</i>Tally</button>
  <button data-tab="directional"><i>⌁</i>Survey</button>
- <button data-tab="toolface"><i>⊙</i>Toolface</button>
+ <button data-tab="rfo"><i>⊙</i>RFO</button>
  <button data-tab="history"><i>≡</i>History</button>
 </nav>
 
@@ -455,10 +492,32 @@ function angleCalc() {
   $("angResult").className="status "+(Math.abs(d)<0.05?"on":d>0?"right":"left");
 }
 
-function tfCalc() {
-  const g=num("gTF"), m=num("mTF"), d=shortAng(m,g), sel=num("desiredTF");
-  $("tfDiff").textContent=ok(d)?fmt(d):"—";
-  $("tfSelected").textContent=fmt(sel);
+function rfoMain(){
+  const a=num("rfoAngle"), c=num("rfoCirc");
+  const r=(ok(a)&&ok(c)&&c>0)?c*a/360:NaN;
+  $("rfoResult").textContent=ok(r)?fmt(r,2):"—";
+  return r;
+}
+function rfoCheck(){
+  const arc=num("rfoArc"), c=num("rfoCheckCirc"), main=rfoMain();
+  const a=(ok(arc)&&ok(c)&&c>0)?arc/c*360:NaN;
+  const r=(ok(a)&&ok(c))?c*a/360:NaN;
+  $("rfoCheckAngle").textContent=ok(a)?fmt(a,2):"—";
+  $("rfoCheckResult").textContent=ok(r)?fmt(r,2):"—";
+  const diff=(ok(main)&&ok(r))?r-main:NaN;
+  const st=$("rfoCheckStatus");
+  if(ok(diff)){ st.textContent=Math.abs(diff)<0.05?"✓ Corroborado":`Diferencia: ${fmt(diff,2)} in`; st.className="status "+(Math.abs(diff)<0.05?"on":"amber"); }
+  else { st.textContent="—"; st.className="status on"; }
+}
+function ubhoCalc(){
+  const a=num("ubhoAngle"), c=num("ubhoCirc"), r=(ok(a)&&ok(c)&&c>0)?c*a/360:NaN, main=rfoMain();
+  $("ubhoResult").textContent=ok(r)?fmt(r,2):"—";
+  $("rfoTotal").textContent=(ok(main)&&ok(r))?fmt(main+r,2):ok(main)?fmt(main,2):"—";
+}
+function rfoCalcLive(){
+  if($("rfoAngle")&&$("rfoCirc")) rfoMain();
+  if($("rfoArc")&&$("rfoCheckCirc")) rfoCheck();
+  if($("ubhoAngle")&&$("ubhoCirc")) ubhoCalc();
 }
 
 function history() {
@@ -487,13 +546,13 @@ function clearHistory() {
 document.addEventListener("input", (e) => {
   const id=e.target && e.target.id;
   if (["dls","slidePrev","target","stand"].includes(id)) motorCalc();
-  if (["gTF","mTF","desiredTF"].includes(id)) tfCalc();
+  if (["rfoAngle","rfoCirc","rfoArc","rfoCheckCirc","ubhoAngle","ubhoCirc"].includes(id)) rfoCalcLive();
 });
 
 document.addEventListener("change", (e) => {
   const id=e.target && e.target.id;
   if (["dls","slidePrev","target","stand"].includes(id)) motorCalc();
-  if (["gTF","mTF","desiredTF"].includes(id)) tfCalc();
+  if (["rfoAngle","rfoCirc","rfoArc","rfoCheckCirc","ubhoAngle","ubhoCirc"].includes(id)) rfoCalcLive();
 });
 
 document.addEventListener("click", (e) => {
@@ -515,12 +574,15 @@ document.addEventListener("click", (e) => {
   else if (id==="dirBtn") directionalCalc();
   else if (id==="angBtn") angleCalc();
   else if (id==="clearHistory") clearHistory();
+  else if (id==="rfoBtn") rfoMain();
+  else if (id==="rfoCheckBtn") rfoCheck();
+  else if (id==="ubhoBtn") ubhoCalc();
 });
 
 function init() {
   try { motorCalc(); } catch(e) { console.error("Motor init",e); }
   try { renderHist(); } catch(e) { console.error("History init",e); }
-  try { tfCalc(); } catch(e) { console.error("TF init",e); }
+  try { rfoCalcLive(); } catch(e) { console.error("RFO init",e); }
 
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("sw.js",{updateViaCache:"none"})
@@ -557,6 +619,8 @@ function clReminderText(t){
   if(t.rem==="weekly") return "⏰ Semanal (lunes) • "+t.time;
   return "⏰ Una vez • "+t.date+" • "+t.time;
 }
+const clCollapsed=new Set();
+let newTaskOpen=false;
 function renderCL(){
   const d=clData(), area=$("listsArea"), sel=$("taskList");
   if(!area||!sel) return;
@@ -572,22 +636,23 @@ function renderCL(){
   area.innerHTML=d.lists.map(l=>{
     const ts=d.tasks.filter(t=>t.listId===l.id);
     const done=ts.filter(t=>t.done).length;
-    return `<div class="card">
-      <div class="row">
-        <div><h2>${clEsc(l.name)}</h2><div class="cl-summary">${done}/${ts.length} completados</div></div>
-        <button class="light" data-cl-list-del="${clEsc(l.id)}">Borrar</button>
+    const collapsed=clCollapsed.has(l.id);
+    return `<div class="cl-collapse ${collapsed?'collapsed':''}" data-cl-list="${clEsc(l.id)}">
+      <div class="cl-head">
+        <div class="cl-head-main"><h2 style="margin:0">${clEsc(l.name)}</h2><div class="cl-summary">${done}/${ts.length} completados</div></div>
+        <button class="light" data-cl-collapse="${clEsc(l.id)}" type="button">${collapsed?'Expandir':'Minimizar'}</button>
+        <button class="light" data-cl-list-del="${clEsc(l.id)}" type="button">Borrar</button>
+        <span class="cl-chevron">⌄</span>
       </div>
-      <div class="redline"></div>
-      ${ts.length ? ts.map(t=>`
-        <div class="cl-item ${t.done?'done':''}">
-          <button class="cl-check ${t.done?'on':''}" data-cl-toggle="${clEsc(t.id)}" aria-label="Completar"></button>
-          <div class="cl-main">
-            <div class="cl-name">${clEsc(t.name)}</div>
-            <div class="cl-meta">${clReminderText(t)}</div>
-          </div>
-          <button class="cl-del" data-cl-del="${clEsc(t.id)}" aria-label="Eliminar">×</button>
-        </div>`).join("")
-        : '<div class="cl-empty">Lista vacía.</div>'}
+      <div class="cl-body">
+        <div class="redline"></div>
+        ${ts.length ? ts.map(t=>`
+          <div class="cl-item ${t.done?'done':''}">
+            <button class="cl-check ${t.done?'on':''}" data-cl-toggle="${clEsc(t.id)}" aria-label="Completar"></button>
+            <div class="cl-main"><div class="cl-name">${clEsc(t.name)}</div><div class="cl-meta">${clReminderText(t)}</div></div>
+            <button class="cl-del" data-cl-del="${clEsc(t.id)}" aria-label="Eliminar">×</button>
+          </div>`).join("") : '<div class="cl-empty">Lista vacía.</div>'}
+      </div>
     </div>`;
   }).join("");
 }
@@ -656,11 +721,30 @@ window.JVNotify={
 };
 
 document.addEventListener("click",e=>{
+  if(e.target.closest("#toggleNewTask")){
+    newTaskOpen=!newTaskOpen;
+    const p=$("newTaskPanel"), b=$("toggleNewTask");
+    if(p) p.classList.toggle("collapsed",!newTaskOpen);
+    if(b) b.textContent=newTaskOpen?"Minimizar":"Expandir";
+    return;
+  }
+  const cc=e.target.closest("[data-cl-collapse]");
+  if(cc){
+    const id=cc.dataset.clCollapse;
+    if(clCollapsed.has(id)) clCollapsed.delete(id); else clCollapsed.add(id);
+    renderCL();
+    return;
+  }
   if(e.target.closest("#addList")) return addCLList();
   if(e.target.closest("#addTask")) return addCLTask();
   const tg=e.target.closest("[data-cl-toggle]"); if(tg) return clToggle(tg.dataset.clToggle);
   const dl=e.target.closest("[data-cl-del]"); if(dl) return clDelete(dl.dataset.clDel);
   const ld=e.target.closest("[data-cl-list-del]"); if(ld) return clListDelete(ld.dataset.clListDel);
+  if(e.target.closest("#toggleUBHO")){
+    const p=$("ubhoPanel"), b=$("toggleUBHO");
+    if(p){ const open=p.style.display!=="none"; p.style.display=open?"none":"block"; if(b) b.textContent=open?"＋ Agregar / mostrar UBHO":"− Ocultar UBHO"; }
+    return;
+  }
   if(e.target.closest("#enableNotifications")){
     JVNotify.enable().then(p=>{
       const status=$("notificationStatus"), btn=$("enableNotifications");
@@ -671,6 +755,9 @@ document.addEventListener("click",e=>{
 });
 
 function initChecklist(){
+  const p=$("newTaskPanel"), b=$("toggleNewTask");
+  if(p) p.classList.add("collapsed");
+  if(b) b.textContent="Expandir";
   renderCL();
   setInterval(checkCL,30000);
 }
