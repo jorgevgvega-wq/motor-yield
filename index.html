@@ -47,6 +47,11 @@ hr{border:0;border-top:1px solid var(--line);margin:14px 0}
 .cl-empty{text-align:center;color:#777;padding:22px 8px;font-size:12px}
 .cl-summary{font-size:11px;color:#69717d;margin-top:4px}.cl-collapse{border:1px solid var(--line);border-radius:14px;background:#fff;margin:11px 0;box-shadow:0 2px 8px #00000008;overflow:hidden}.cl-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:14px 15px}.cl-head-main{min-width:0;flex:1}.cl-body{padding:0 15px 15px}.cl-chevron{font-size:16px;font-weight:900;color:#69717d;min-width:34px}.cl-collapse.collapsed .cl-body{display:none}.cl-collapse.collapsed .redline{display:none}.cl-collapse.collapsed .cl-chevron{transform:rotate(-90deg)}
 
+
+.rfo-visual-card{margin:12px 0 16px;padding:12px;border:1px solid var(--line);border-radius:16px;background:#fafafa}
+.rfo-visual-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;color:#555}.rfo-visual-title span{font-weight:900;color:var(--red)}
+.rfo-svg{display:block;width:min(100%,320px);height:auto;margin:0 auto}.rfo-ring{fill:#fff;stroke:#b7bcc4;stroke-width:3}.rfo-center{fill:var(--red)}.rfo-ref{stroke:#999;stroke-width:2;stroke-dasharray:5 5}.rfo-angle-line{stroke:var(--red);stroke-width:4;stroke-linecap:round}.rfo-arc{fill:none;stroke:var(--red);stroke-width:5;stroke-linecap:round}.rfo-point{fill:var(--red);stroke:#fff;stroke-width:3}.rfo-label{font-size:10px;font-weight:800;fill:#666}.rfo-legend{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;font-size:10px;color:#777}
+.formula-box{border:1px solid var(--line);border-radius:14px;padding:12px;margin:10px 0;background:#fafafa}.formula-title{font-weight:900;margin-bottom:6px}.formula{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;font-weight:800;line-height:1.5}.formula-example{margin-top:6px;color:#666;font-size:12px}
 </style>
 </head>
 <body>
@@ -96,7 +101,7 @@ hr{border:0;border-top:1px solid var(--line);margin:14px 0}
  <div id="listsArea"></div>
 
  <div class="card">
-  <div class="row"><h2>Notificaciones</h2><span class="kicker">V5.1</span></div>
+  <div class="row"><h2>Notificaciones</h2><span class="kicker">V5.2</span></div>
   <div class="redline"></div>
   <div class="sub">Activa el permiso de notificaciones. Esta versión puede mostrar notificaciones mientras la aplicación está abierta. Push real con la app cerrada será la siguiente etapa.</div>
   <button class="action" id="enableNotifications" style="width:100%">🔔 Activar notificaciones</button>
@@ -233,50 +238,66 @@ hr{border:0;border-top:1px solid var(--line);margin:14px 0}
 
 <section id="rfo" class="tab">
  <div class="card">
-  <div class="row"><h2>RFO • Rig Floor Offset</h2><span class="kicker">RFO</span></div>
+  <div class="row"><h2>RFO • Rig Floor Offset</h2><span class="kicker">FIELD CALC</span></div>
   <div class="redline"></div>
-  <div class="sub">Calcula el offset lineal sobre la circunferencia a partir del ángulo visual. También puedes corroborarlo usando una medición física alrededor de la herramienta.</div>
+  <div class="sub">Calcula el RFO usando el ángulo visual o el ángulo corroborado con una medición física sobre la circunferencia. El esquema se mueve en tiempo real con tus valores.</div>
+
+  <div class="rfo-visual-card">
+   <div class="rfo-visual-title"><b>Vista circular</b><span id="rfoVizAngle">—</span></div>
+   <svg id="rfoSvg" class="rfo-svg" viewBox="0 0 320 320" role="img" aria-label="Esquema circular RFO">
+    <circle cx="160" cy="160" r="112" class="rfo-ring"/>
+    <circle cx="160" cy="160" r="5" class="rfo-center"/>
+    <line id="rfoRefLine" x1="160" y1="36" x2="160" y2="284" class="rfo-ref"/>
+    <line id="rfoAngleLine" x1="160" y1="160" x2="160" y2="48" class="rfo-angle-line"/>
+    <path id="rfoArcPath" d="" class="rfo-arc"/>
+    <circle id="rfoPoint" cx="160" cy="48" r="7" class="rfo-point"/>
+    <text x="168" y="31" class="rfo-label">0° / REF</text>
+    <text id="rfoAngleLabel" x="168" y="306" class="rfo-label">Ángulo —</text>
+    <text id="rfoPointLabel" x="169" y="52" class="rfo-label">—</text>
+   </svg>
+   <div class="rfo-legend"><span>REF</span><span>↗ Ángulo</span><span>● punto de referencia</span></div>
+  </div>
+
   <div class="grid">
    <div><label>Ángulo visual (°)</label><input id="rfoAngle" type="number" step="0.01" inputmode="decimal" placeholder="Ej. 60"></div>
-   <div><label>Circunferencia / referencia (in)</label><input id="rfoCirc" type="number" step="0.01" inputmode="decimal" placeholder="Ej. 807"></div>
+   <div><label>Circunferencia de referencia</label><input id="rfoCirc" type="number" step="0.01" inputmode="decimal" placeholder="Ej. 807"></div>
   </div>
-  <button class="action" style="margin-top:10px;width:100%" id="rfoBtn">Calcular RFO</button>
-  <div class="out red"><div class="lbl">RFO</div><div id="rfoResult" class="val">—</div><div class="unit">unidades de arco sobre la circunferencia</div></div>
-  <div class="note">Fórmula: RFO = Circunferencia × Ángulo / 360°. Ejemplo de tu hoja: 807 × 61.79° / 360° ≈ 138.51 (con las cifras de la hoja).</div>
+  <div class="out red"><div class="lbl">RFO por ángulo visual</div><div id="rfoResult" class="val">—</div><div class="unit">misma unidad de la circunferencia</div></div>
  </div>
 
  <div class="card">
-  <div class="row"><h2>Corroborar RFO</h2><span class="kicker">CHECK</span></div>
+  <div class="row"><h2>Corroborar RFO</h2><span class="kicker">MEDICIÓN</span></div>
   <div class="redline"></div>
-  <div class="sub">Ingresa la distancia medida sobre la circunferencia y la circunferencia total. La app obtiene el ángulo equivalente y compara el RFO.</div>
+  <div class="sub">Usa la medición física de la libreta: <b>arco ÷ circunferencia × 360°</b>. El resultado se usa para corroborar el ángulo visual.</div>
   <div class="grid">
-   <div><label>Medición de arco (misma unidad)</label><input id="rfoArc" type="number" step="0.01" inputmode="decimal" placeholder="Ej. 167"></div>
-   <div><label>Circunferencia total (misma unidad)</label><input id="rfoCheckCirc" type="number" step="0.01" inputmode="decimal" placeholder="Ej. 973"></div>
+   <div><label>Arco medido (misma unidad)</label><input id="rfoArc" type="number" step="0.01" inputmode="decimal" placeholder="Ej. 167"></div>
+   <div><label>Circunferencia total</label><input id="rfoCheckCirc" type="number" step="0.01" inputmode="decimal" placeholder="Ej. 973"></div>
   </div>
-  <button class="action" style="margin-top:10px;width:100%" id="rfoCheckBtn">Corroborar</button>
-  <div class="grid">
-   <div class="out"><div class="lbl">Ángulo corroborado</div><div id="rfoCheckAngle" class="val">—</div><div class="unit">°</div></div>
-   <div class="out green"><div class="lbl">RFO corroborado</div><div id="rfoCheckResult" class="val">—</div><div class="unit">in</div></div>
-  </div>
+  <div class="out"><div class="lbl">Ángulo corroborado</div><div id="rfoCheckAngle" class="val">—</div><div class="unit">°</div></div>
   <div id="rfoCheckStatus" class="status on">—</div>
  </div>
 
  <div class="card">
-  <div class="row"><h2>UBHO</h2><span class="kicker">OPTION</span></div>
+  <div class="row"><h2>RFO con referencia UBHO</h2><span class="kicker">UBHO</span></div>
   <div class="redline"></div>
-  <div class="sub">Agrega el UBHO como referencia adicional. Puedes calcular su offset desde un ángulo y, si lo deseas, sumarlo al RFO principal.</div>
-  <button class="light" id="toggleUBHO" type="button" style="width:100%">＋ Agregar / mostrar UBHO</button>
-  <div id="ubhoPanel" style="display:none;margin-top:12px">
-   <div class="grid">
-    <div><label>UBHO ángulo (°)</label><input id="ubhoAngle" type="number" step="0.01" inputmode="decimal" placeholder="Ej. 60"></div>
-    <div><label>UBHO circunferencia (misma unidad)</label><input id="ubhoCirc" type="number" step="0.01" inputmode="decimal" placeholder="Ej. 807"></div>
-   </div>
-   <button class="action" style="margin-top:10px;width:100%" id="ubhoBtn">Calcular UBHO</button>
-   <div class="grid">
-    <div class="out"><div class="lbl">UBHO RFO</div><div id="ubhoResult" class="val">—</div><div class="unit">misma unidad</div></div>
-    <div class="out red"><div class="lbl">RFO total</div><div id="rfoTotal" class="val">—</div><div class="unit">misma unidad</div></div>
-   </div>
+  <div class="sub">Aquí aplicamos el segundo paso de tu hoja: la circunferencia asociada al UBHO multiplicada por el ángulo corroborado y dividida entre 360°.</div>
+  <div class="grid">
+   <div><label>Circunferencia / distancia al UBHO</label><input id="ubhoCirc" type="number" step="0.01" inputmode="decimal" placeholder="Ej. 807"></div>
+   <div><label>Ángulo a usar (automático)</label><input id="ubhoAngle" type="number" step="0.01" inputmode="decimal" placeholder="Se toma el corroborado"></div>
   </div>
+  <button class="action" style="margin-top:10px;width:100%" id="ubhoBtn">Calcular RFO + UBHO</button>
+  <div class="grid">
+   <div class="out"><div class="lbl">RFO por ángulo corroborado</div><div id="ubhoResult" class="val">—</div><div class="unit">misma unidad</div></div>
+   <div class="out red"><div class="lbl">RFO final</div><div id="rfoTotal" class="val">—</div><div class="unit">misma unidad</div></div>
+  </div>
+ </div>
+
+ <div class="card">
+  <div class="row"><h2>Fórmulas de campo</h2><span class="kicker">REFERENCIA</span></div>
+  <div class="redline"></div>
+  <div class="formula-box"><div class="formula-title">1. Ángulo corroborado</div><div class="formula">Ángulo = (Arco medido ÷ Circunferencia) × 360°</div><div class="formula-example">Ejemplo: (167 ÷ 973) × 360° = <b>61.79°</b></div></div>
+  <div class="formula-box"><div class="formula-title">2. RFO usando el UBHO</div><div class="formula">RFO = Circunferencia UBHO × Ángulo ÷ 360°</div><div class="formula-example">Ejemplo: 807 × 61.79° ÷ 360° = <b>138.51</b></div></div>
+  <div class="note">La app mantiene separadas las dos operaciones para que puedas ver y corroborar cada paso, igual que en tu hoja.</div>
  </div>
 </section>
 
@@ -307,6 +328,7 @@ const num = (id) => {
   return el ? parseFloat(el.value) : NaN;
 };
 const ok = (x) => Number.isFinite(x);
+let rfoCheckedAngle = NaN;
 const fmt = (x, d = 2) => ok(x) ? x.toFixed(d) : "—";
 const shortAng = (target, current) => ((target - current + 540) % 360) - 180;
 
@@ -492,31 +514,64 @@ function angleCalc() {
   $("angResult").className="status "+(Math.abs(d)<0.05?"on":d>0?"right":"left");
 }
 
+function polarPoint(cx,cy,r,deg){
+  const rad=(deg-90)*Math.PI/180;
+  return {x:cx+r*Math.cos(rad),y:cy+r*Math.sin(rad)};
+}
+function rfoDraw(angle, pointText){
+  const a=ok(angle)?Math.max(0,Math.min(359.99,angle)):0;
+  const p=polarPoint(160,160,112,a);
+  const q=polarPoint(160,160,78,a);
+  const large=a>180?1:0;
+  const start=polarPoint(160,160,78,0);
+  const d=a>0.01?`M ${start.x.toFixed(2)} ${start.y.toFixed(2)} A 78 78 0 ${large} 1 ${q.x.toFixed(2)} ${q.y.toFixed(2)}`:"";
+  const line=$('rfoAngleLine'), arc=$('rfoArcPath'), point=$('rfoPoint');
+  if(line){line.setAttribute('x2',p.x);line.setAttribute('y2',p.y);}
+  if(arc) arc.setAttribute('d',d);
+  if(point){point.setAttribute('cx',p.x);point.setAttribute('cy',p.y);}
+  if($('rfoVizAngle')) $('rfoVizAngle').textContent=ok(angle)?fmt(angle,2)+"°":"—";
+  if($('rfoAngleLabel')) $('rfoAngleLabel').textContent=ok(angle)?`Ángulo ${fmt(angle,2)}°`:"Ángulo —";
+  if($('rfoPointLabel')){$('rfoPointLabel').setAttribute('x',Math.min(275,p.x+9));$('rfoPointLabel').setAttribute('y',Math.max(28,p.y-5));$('rfoPointLabel').textContent=pointText||"—";}
+}
 function rfoMain(){
   const a=num("rfoAngle"), c=num("rfoCirc");
   const r=(ok(a)&&ok(c)&&c>0)?c*a/360:NaN;
   $("rfoResult").textContent=ok(r)?fmt(r,2):"—";
+  // If corroborated angle exists, visualization follows it; otherwise visual angle.
+  const ca=rfoCheckedAngle;
+  rfoDraw(ok(ca)?ca:a, ok(ca)?"CORR":"VISUAL");
   return r;
 }
 function rfoCheck(){
-  const arc=num("rfoArc"), c=num("rfoCheckCirc"), main=rfoMain();
+  const arc=num("rfoArc"), c=num("rfoCheckCirc"), visual=num("rfoAngle");
   const a=(ok(arc)&&ok(c)&&c>0)?arc/c*360:NaN;
-  const r=(ok(a)&&ok(c))?c*a/360:NaN;
+  rfoCheckedAngle=a;
   $("rfoCheckAngle").textContent=ok(a)?fmt(a,2):"—";
-  $("rfoCheckResult").textContent=ok(r)?fmt(r,2):"—";
-  const diff=(ok(main)&&ok(r))?r-main:NaN;
   const st=$("rfoCheckStatus");
-  if(ok(diff)){ st.textContent=Math.abs(diff)<0.05?"✓ Corroborado":`Diferencia: ${fmt(diff,2)} in`; st.className="status "+(Math.abs(diff)<0.05?"on":"amber"); }
-  else { st.textContent="—"; st.className="status on"; }
+  if(ok(a)){
+    const diff=ok(visual)?a-visual:NaN;
+    if(ok(diff)){ st.textContent=Math.abs(diff)<0.25?`✓ Corroborado • diferencia ${fmt(diff,2)}°`:`⚠ Diferencia ${fmt(diff,2)}°`; st.className="status "+(Math.abs(diff)<0.25?"on":"amber"); }
+    else { st.textContent="✓ Ángulo calculado desde la medición"; st.className="status on"; }
+  } else { st.textContent="—"; st.className="status on"; }
+  rfoMain();
+  return a;
 }
 function ubhoCalc(){
-  const a=num("ubhoAngle"), c=num("ubhoCirc"), r=(ok(a)&&ok(c)&&c>0)?c*a/360:NaN, main=rfoMain();
+  const c=num("ubhoCirc");
+  const checked=rfoCheckedAngle;
+  const visual=num("rfoAngle");
+  const manual=num("ubhoAngle");
+  const a=ok(checked)?checked:(ok(manual)?manual:visual);
+  if($('ubhoAngle')&&ok(a)&&!ok(manual)) $('ubhoAngle').value=a.toFixed(2);
+  const r=(ok(a)&&ok(c)&&c>0)?c*a/360:NaN;
   $("ubhoResult").textContent=ok(r)?fmt(r,2):"—";
-  $("rfoTotal").textContent=(ok(main)&&ok(r))?fmt(main+r,2):ok(main)?fmt(main,2):"—";
+  $("rfoTotal").textContent=ok(r)?fmt(r,2):"—";
+  rfoDraw(a,"UBHO");
+  return r;
 }
 function rfoCalcLive(){
   if($("rfoAngle")&&$("rfoCirc")) rfoMain();
-  if($("rfoArc")&&$("rfoCheckCirc")) rfoCheck();
+  if($("rfoArc")&&$("rfoCheckCirc") && ok(num("rfoArc")) && ok(num("rfoCheckCirc"))) rfoCheck();
   if($("ubhoAngle")&&$("ubhoCirc")) ubhoCalc();
 }
 
