@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>JV Drilling • Field Tools v5.2 RFO PRO</title>
+<title>JV Drilling • Field Tools v5.3 RFO PRO</title>
 <style>
 :root{--red:#d71920;--red2:#a90f15;--black:#111317;--dark:#1a1d22;--gray:#69717d;--line:#dfe2e6;--bg:#f3f4f6;--card:#fff;--green:#137333;--amber:#a45b00}
 *{box-sizing:border-box}
@@ -255,30 +255,37 @@ hr{border:0;border-top:1px solid var(--line);margin:14px 0}
   <div class="sub">Calcula el RFO usando el ángulo visual o el ángulo corroborado con una medición física sobre la circunferencia. El esquema se mueve en tiempo real con tus valores.</div>
 
   <div class="rfo-visual-card">
-   <div class="rfo-visual-title"><b>Vista circular</b><span id="rfoVizAngle">—</span></div>
+   <div class="rfo-visual-title"><b>Vista circular • referencias</b><span id="rfoVizAngle">—</span></div>
    <svg id="rfoSvg" class="rfo-svg" viewBox="0 0 320 320" role="img" aria-label="Esquema circular MWD Motor UBHO">
     <circle cx="160" cy="160" r="112" class="rfo-ring"/>
     <circle cx="160" cy="160" r="5" class="rfo-center"/>
-    <line id="rfoRefLine" x1="160" y1="36" x2="160" y2="284" class="rfo-ref"/>
+    <line x1="160" y1="36" x2="160" y2="284" class="rfo-ref"/>
     <g id="rfoMwdG"><line id="rfoMwdLine" x1="160" y1="160" x2="160" y2="48" class="rfo-mwd"/><circle id="rfoMwdPoint" cx="160" cy="48" r="7" class="rfo-mwd-point"/><text id="rfoMwdLabel" x="168" y="48" class="rfo-mwd-label">MWD —°</text></g>
     <g id="rfoMotorG"><line id="rfoMotorLine" x1="160" y1="160" x2="160" y2="48" class="rfo-motor"/><circle id="rfoMotorPoint" cx="160" cy="48" r="8" class="rfo-motor-point"/><text id="rfoMotorLabel" x="168" y="48" class="rfo-motor-label">MOTOR —°</text></g>
     <g id="rfoUbhoG"><line id="rfoUbhoLine" x1="160" y1="160" x2="160" y2="48" class="rfo-ubho"/><circle id="rfoUbhoPoint" cx="160" cy="48" r="7" class="rfo-ubho-point"/><text id="rfoUbhoLabel" x="168" y="48" class="rfo-ubho-label">UBHO —°</text></g>
     <text x="168" y="31" class="rfo-label">0° / REF</text>
-    <text id="rfoAngleLabel" x="168" y="306" class="rfo-label">Motor —°</text>
    </svg>
    <div class="rfo-legend"><span style="color:#1976d2;font-weight:900">● MWD</span><span style="color:#d71920;font-weight:900">● MOTOR</span><span style="color:#168a52;font-weight:900">● UBHO</span></div>
-   <div class="rfo-live-note">Cambia cualquiera de los tres valores y el círculo se actualiza en tiempo real.</div>
+   <div class="rfo-live-note">Las tres referencias se actualizan en tiempo real.</div>
   </div>
 
   <div class="rfo-elements">
-   <div class="rfo-el mwd"><b>MWD • ángulo °</b><input id="rfoMwd" type="number" step="0.01" inputmode="decimal" placeholder="Ej. 0"></div>
+   <div class="rfo-el mwd"><b>MWD • ángulo °</b><input id="rfoMwd" type="number" step="0.01" inputmode="decimal" placeholder="Ej. 35"></div>
    <div class="rfo-el motor"><b>MOTOR • ángulo °</b><input id="rfoMotor" type="number" step="0.01" inputmode="decimal" placeholder="Ej. 61.79"></div>
    <div class="rfo-el ubho"><b>UBHO • ángulo °</b><input id="rfoUbho" type="number" step="0.01" inputmode="decimal" placeholder="Ej. 180"></div>
   </div>
+
   <div class="grid">
    <div><label>Ángulo visual (°)</label><input id="rfoAngle" type="number" step="0.01" inputmode="decimal" placeholder="Ej. 60"></div>
    <div><label>Circunferencia de referencia</label><input id="rfoCirc" type="number" step="0.01" inputmode="decimal" placeholder="Ej. 807"></div>
   </div>
+
+  <div class="grid">
+   <div class="out"><div class="lbl">MWD → MOTOR</div><div id="deltaMwdMotor" class="val">—</div><div class="unit">diferencia angular</div></div>
+   <div class="out"><div class="lbl">MOTOR → UBHO</div><div id="deltaMotorUbho" class="val">—</div><div class="unit">diferencia angular</div></div>
+  </div>
+
+  <div class="out red"><div class="lbl">RFO por ángulo visual</div><div id="rfoResult" class="val">—</div><div class="unit">misma unidad de la circunferencia</div></div>
   <div class="out red"><div class="lbl">RFO por ángulo visual</div><div id="rfoResult" class="val">—</div><div class="unit">misma unidad de la circunferencia</div></div>
  </div>
 
@@ -295,17 +302,19 @@ hr{border:0;border-top:1px solid var(--line);margin:14px 0}
  </div>
 
  <div class="card">
-  <div class="row"><h2>RFO con referencia UBHO</h2><span class="kicker">UBHO</span></div>
-  <div class="redline"></div>
-  <div class="sub">Aquí aplicamos el segundo paso de tu hoja: la circunferencia asociada al UBHO multiplicada por el ángulo corroborado y dividida entre 360°.</div>
-  <div class="grid">
-   <div><label>Circunferencia / distancia al UBHO</label><input id="ubhoCirc" type="number" step="0.01" inputmode="decimal" placeholder="Ej. 807"></div>
-   <div><label>Ángulo a usar (automático)</label><input id="ubhoAngle" type="number" step="0.01" inputmode="decimal" placeholder="Se toma el corroborado"></div>
-  </div>
-  <button class="action" style="margin-top:10px;width:100%" id="ubhoBtn">Calcular RFO + UBHO</button>
-  <div class="grid">
-   <div class="out"><div class="lbl">RFO por ángulo corroborado</div><div id="ubhoResult" class="val">—</div><div class="unit">misma unidad</div></div>
-   <div class="out red"><div class="lbl">RFO final</div><div id="rfoTotal" class="val">—</div><div class="unit">misma unidad</div></div>
+  <div class="row"><h2>RFO con referencia UBHO</h2><button class="light" id="toggleUBHO" type="button">＋ Agregar / mostrar UBHO</button></div>
+  <div id="ubhoPanel" style="display:none;margin-top:12px">
+   <div class="redline"></div>
+   <div class="sub">Activa esta sección cuando quieras corroborar o trabajar la referencia UBHO.</div>
+   <div class="grid">
+    <div><label>Circunferencia / distancia al UBHO</label><input id="ubhoCirc" type="number" step="0.01" inputmode="decimal" placeholder="Ej. 807"></div>
+    <div><label>Ángulo a usar (automático)</label><input id="ubhoAngle" type="number" step="0.01" inputmode="decimal" placeholder="Se toma el corroborado"></div>
+   </div>
+   <button class="action" style="margin-top:10px;width:100%" id="ubhoBtn">Calcular RFO + UBHO</button>
+   <div class="grid">
+    <div class="out"><div class="lbl">RFO por ángulo corroborado</div><div id="ubhoResult" class="val">—</div><div class="unit">misma unidad</div></div>
+    <div class="out red"><div class="lbl">RFO final</div><div id="rfoTotal" class="val">—</div><div class="unit">misma unidad</div></div>
+   </div>
   </div>
  </div>
 
@@ -314,7 +323,7 @@ hr{border:0;border-top:1px solid var(--line);margin:14px 0}
   <div class="redline"></div>
   <div class="formula-box"><div class="formula-title">1. Ángulo corroborado</div><div class="formula">Ángulo = (Arco medido ÷ Circunferencia) × 360°</div><div class="formula-example">Ejemplo: (167 ÷ 973) × 360° = <b>61.79°</b></div></div>
   <div class="formula-box"><div class="formula-title">2. RFO usando el UBHO</div><div class="formula">RFO = Circunferencia UBHO × Ángulo ÷ 360°</div><div class="formula-example">Ejemplo: 807 × 61.79° ÷ 360° = <b>138.51</b></div></div>
-  <div class="note">La app mantiene separadas las dos operaciones para que puedas ver y corroborar cada paso, igual que en tu hoja.</div>
+  <div class="note">Las diferencias angulares usan la diferencia circular mínima entre 0° y 360°. La app mantiene separadas las operaciones para que puedas ver y corroborar cada paso, igual que en tu hoja.</div>
  </div>
 </section>
 
@@ -531,25 +540,6 @@ function angleCalc() {
   $("angResult").className="status "+(Math.abs(d)<0.05?"on":d>0?"right":"left");
 }
 
-function polarPoint(cx,cy,r,deg){
-  const rad=(deg-90)*Math.PI/180;
-  return {x:cx+r*Math.cos(rad),y:cy+r*Math.sin(rad)};
-}
-function rfoDraw(angle, pointText){
-  const a=ok(angle)?Math.max(0,Math.min(359.99,angle)):0;
-  const p=polarPoint(160,160,112,a);
-  const q=polarPoint(160,160,78,a);
-  const large=a>180?1:0;
-  const start=polarPoint(160,160,78,0);
-  const d=a>0.01?`M ${start.x.toFixed(2)} ${start.y.toFixed(2)} A 78 78 0 ${large} 1 ${q.x.toFixed(2)} ${q.y.toFixed(2)}`:"";
-  const line=$('rfoAngleLine'), arc=$('rfoArcPath'), point=$('rfoPoint');
-  if(line){line.setAttribute('x2',p.x);line.setAttribute('y2',p.y);}
-  if(arc) arc.setAttribute('d',d);
-  if(point){point.setAttribute('cx',p.x);point.setAttribute('cy',p.y);}
-  if($('rfoVizAngle')) $('rfoVizAngle').textContent=ok(angle)?fmt(angle,2)+"°":"—";
-  if($('rfoAngleLabel')) $('rfoAngleLabel').textContent=ok(angle)?`Ángulo ${fmt(angle,2)}°`:"Ángulo —";
-  if($('rfoPointLabel')){$('rfoPointLabel').setAttribute('x',Math.min(275,p.x+9));$('rfoPointLabel').setAttribute('y',Math.max(28,p.y-5));$('rfoPointLabel').textContent=pointText||"—";}
-}
 function rfoMain(){
   const a=num("rfoAngle"), c=num("rfoCirc");
   const r=(ok(a)&&ok(c)) ? c*a/360 : NaN;
@@ -616,17 +606,20 @@ function setRfoElement(prefix, angle){
 function updateRfoVisual(){
   const visual=num("rfoAngle"), checked=num("rfoCheckAngle");
   let motor=num("rfoMotor");
-  // Motor is the key directional element. If its dedicated value is blank,
-  // use the corroborated angle, then the visual angle.
   if(!ok(motor)) motor=ok(checked)?checked:visual;
   const mwd=num("rfoMwd"), ubho=num("rfoUbho");
+
   setRfoElement("mwd",mwd);
   setRfoElement("motor",motor);
   setRfoElement("ubho",ubho);
+
   const title=$("rfoVizAngle");
-  if(title) title.textContent=ok(motor) ? `Motor ${fmt(((motor%360)+360)%360)}°` : "—";
-  const al=$("rfoAngleLabel");
-  if(al) al.textContent=ok(motor) ? `Motor ${fmt(((motor%360)+360)%360)}°` : "Motor —°";
+  if(title) title.textContent=ok(motor)?`Motor ${fmt(((motor%360)+360)%360)}°`:"—";
+
+  const d1=ok(mwd)&&ok(motor)?shortAng(motor,mwd):NaN;
+  const d2=ok(motor)&&ok(ubho)?shortAng(ubho,motor):NaN;
+  if($("deltaMwdMotor")) $("deltaMwdMotor").textContent=ok(d1)?(d1>=0?"+":"")+fmt(d1)+"°":"—";
+  if($("deltaMotorUbho")) $("deltaMotorUbho").textContent=ok(d2)?(d2>=0?"+":"")+fmt(d2)+"°":"—";
 }
 
 function rfoCalcLive(){
