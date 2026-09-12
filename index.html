@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>JV Drilling • Field Tools v5.2</title>
+<title>JV Drilling • Field Tools v5.2 RFO PRO</title>
 <style>
 :root{--red:#d71920;--red2:#a90f15;--black:#111317;--dark:#1a1d22;--gray:#69717d;--line:#dfe2e6;--bg:#f3f4f6;--card:#fff;--green:#137333;--amber:#a45b00}
 *{box-sizing:border-box}
@@ -51,6 +51,18 @@ hr{border:0;border-top:1px solid var(--line);margin:14px 0}
 .rfo-visual-card{margin:12px 0 16px;padding:12px;border:1px solid var(--line);border-radius:16px;background:#fafafa}
 .rfo-visual-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;color:#555}.rfo-visual-title span{font-weight:900;color:var(--red)}
 .rfo-svg{display:block;width:min(100%,320px);height:auto;margin:0 auto}.rfo-ring{fill:#fff;stroke:#b7bcc4;stroke-width:3}.rfo-center{fill:var(--red)}.rfo-ref{stroke:#999;stroke-width:2;stroke-dasharray:5 5}.rfo-angle-line{stroke:var(--red);stroke-width:4;stroke-linecap:round}.rfo-arc{fill:none;stroke:var(--red);stroke-width:5;stroke-linecap:round}.rfo-point{fill:var(--red);stroke:#fff;stroke-width:3}.rfo-label{font-size:10px;font-weight:800;fill:#666}.rfo-legend{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;font-size:10px;color:#777}
+.rfo-elements{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:12px 0}
+.rfo-el{border:1px solid var(--line);border-radius:14px;padding:10px;background:#fff}
+.rfo-el b{display:block;font-size:12px;margin-bottom:6px}
+.rfo-el input{width:100%;font-size:17px;font-weight:800;text-align:center}
+.rfo-el.mwd{border-top:4px solid #1976d2}.rfo-el.motor{border-top:4px solid #d71920}.rfo-el.ubho{border-top:4px solid #168a52}
+.rfo-el.mwd b{color:#1976d2}.rfo-el.motor b{color:#d71920}.rfo-el.ubho b{color:#168a52}
+.rfo-mwd{stroke:#1976d2;stroke-width:4;stroke-linecap:round}.rfo-motor{stroke:#d71920;stroke-width:5;stroke-linecap:round}.rfo-ubho{stroke:#168a52;stroke-width:4;stroke-linecap:round}
+.rfo-mwd-point{fill:#1976d2;stroke:#fff;stroke-width:3}.rfo-motor-point{fill:#d71920;stroke:#fff;stroke-width:3}.rfo-ubho-point{fill:#168a52;stroke:#fff;stroke-width:3}
+.rfo-mwd-label{font-size:11px;font-weight:900;fill:#1976d2}.rfo-motor-label{font-size:11px;font-weight:900;fill:#d71920}.rfo-ubho-label{font-size:11px;font-weight:900;fill:#168a52}
+.rfo-live-note{margin-top:8px;text-align:center;font-size:11px;color:#69717d}
+@media(max-width:420px){.rfo-elements{gap:6px}.rfo-el{padding:8px 6px}.rfo-el input{font-size:15px}}
+
 .formula-box{border:1px solid var(--line);border-radius:14px;padding:12px;margin:10px 0;background:#fafafa}.formula-title{font-weight:900;margin-bottom:6px}.formula{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;font-weight:800;line-height:1.5}.formula-example{margin-top:6px;color:#666;font-size:12px}
 </style>
 </head>
@@ -244,20 +256,25 @@ hr{border:0;border-top:1px solid var(--line);margin:14px 0}
 
   <div class="rfo-visual-card">
    <div class="rfo-visual-title"><b>Vista circular</b><span id="rfoVizAngle">—</span></div>
-   <svg id="rfoSvg" class="rfo-svg" viewBox="0 0 320 320" role="img" aria-label="Esquema circular RFO">
+   <svg id="rfoSvg" class="rfo-svg" viewBox="0 0 320 320" role="img" aria-label="Esquema circular MWD Motor UBHO">
     <circle cx="160" cy="160" r="112" class="rfo-ring"/>
     <circle cx="160" cy="160" r="5" class="rfo-center"/>
     <line id="rfoRefLine" x1="160" y1="36" x2="160" y2="284" class="rfo-ref"/>
-    <line id="rfoAngleLine" x1="160" y1="160" x2="160" y2="48" class="rfo-angle-line"/>
-    <path id="rfoArcPath" d="" class="rfo-arc"/>
-    <circle id="rfoPoint" cx="160" cy="48" r="7" class="rfo-point"/>
+    <g id="rfoMwdG"><line id="rfoMwdLine" x1="160" y1="160" x2="160" y2="48" class="rfo-mwd"/><circle id="rfoMwdPoint" cx="160" cy="48" r="7" class="rfo-mwd-point"/><text id="rfoMwdLabel" x="168" y="48" class="rfo-mwd-label">MWD —°</text></g>
+    <g id="rfoMotorG"><line id="rfoMotorLine" x1="160" y1="160" x2="160" y2="48" class="rfo-motor"/><circle id="rfoMotorPoint" cx="160" cy="48" r="8" class="rfo-motor-point"/><text id="rfoMotorLabel" x="168" y="48" class="rfo-motor-label">MOTOR —°</text></g>
+    <g id="rfoUbhoG"><line id="rfoUbhoLine" x1="160" y1="160" x2="160" y2="48" class="rfo-ubho"/><circle id="rfoUbhoPoint" cx="160" cy="48" r="7" class="rfo-ubho-point"/><text id="rfoUbhoLabel" x="168" y="48" class="rfo-ubho-label">UBHO —°</text></g>
     <text x="168" y="31" class="rfo-label">0° / REF</text>
-    <text id="rfoAngleLabel" x="168" y="306" class="rfo-label">Ángulo —</text>
-    <text id="rfoPointLabel" x="169" y="52" class="rfo-label">—</text>
+    <text id="rfoAngleLabel" x="168" y="306" class="rfo-label">Motor —°</text>
    </svg>
-   <div class="rfo-legend"><span>REF</span><span>↗ Ángulo</span><span>● punto de referencia</span></div>
+   <div class="rfo-legend"><span style="color:#1976d2;font-weight:900">● MWD</span><span style="color:#d71920;font-weight:900">● MOTOR</span><span style="color:#168a52;font-weight:900">● UBHO</span></div>
+   <div class="rfo-live-note">Cambia cualquiera de los tres valores y el círculo se actualiza en tiempo real.</div>
   </div>
 
+  <div class="rfo-elements">
+   <div class="rfo-el mwd"><b>MWD • ángulo °</b><input id="rfoMwd" type="number" step="0.01" inputmode="decimal" placeholder="Ej. 0"></div>
+   <div class="rfo-el motor"><b>MOTOR • ángulo °</b><input id="rfoMotor" type="number" step="0.01" inputmode="decimal" placeholder="Ej. 61.79"></div>
+   <div class="rfo-el ubho"><b>UBHO • ángulo °</b><input id="rfoUbho" type="number" step="0.01" inputmode="decimal" placeholder="Ej. 180"></div>
+  </div>
   <div class="grid">
    <div><label>Ángulo visual (°)</label><input id="rfoAngle" type="number" step="0.01" inputmode="decimal" placeholder="Ej. 60"></div>
    <div><label>Circunferencia de referencia</label><input id="rfoCirc" type="number" step="0.01" inputmode="decimal" placeholder="Ej. 807"></div>
@@ -535,40 +552,83 @@ function rfoDraw(angle, pointText){
 }
 function rfoMain(){
   const a=num("rfoAngle"), c=num("rfoCirc");
-  const r=(ok(a)&&ok(c)&&c>0)?c*a/360:NaN;
-  $("rfoResult").textContent=ok(r)?fmt(r,2):"—";
-  // If corroborated angle exists, visualization follows it; otherwise visual angle.
-  const ca=rfoCheckedAngle;
-  rfoDraw(ok(ca)?ca:a, ok(ca)?"CORR":"VISUAL");
+  const r=(ok(a)&&ok(c)) ? c*a/360 : NaN;
+  $("rfoResult").textContent=fmt(r);
+  updateRfoVisual();
   return r;
 }
 function rfoCheck(){
-  const arc=num("rfoArc"), c=num("rfoCheckCirc"), visual=num("rfoAngle");
-  const a=(ok(arc)&&ok(c)&&c>0)?arc/c*360:NaN;
-  rfoCheckedAngle=a;
-  $("rfoCheckAngle").textContent=ok(a)?fmt(a,2):"—";
-  const st=$("rfoCheckStatus");
-  if(ok(a)){
-    const diff=ok(visual)?a-visual:NaN;
-    if(ok(diff)){ st.textContent=Math.abs(diff)<0.25?`✓ Corroborado • diferencia ${fmt(diff,2)}°`:`⚠ Diferencia ${fmt(diff,2)}°`; st.className="status "+(Math.abs(diff)<0.25?"on":"amber"); }
-    else { st.textContent="✓ Ángulo calculado desde la medición"; st.className="status on"; }
-  } else { st.textContent="—"; st.className="status on"; }
-  rfoMain();
-  return a;
+  const arc=num("rfoArc"), c=num("rfoCheckCirc");
+  const ang=(ok(arc)&&ok(c)&&c!==0) ? arc/c*360 : NaN;
+  rfoCheckedAngle=ang;
+  $("rfoCheckAngle").textContent=fmt(ang)+"°";
+  const visual=num("rfoAngle");
+  let msg="—";
+  if(ok(ang)&&ok(visual)){
+    const diff=ang-visual;
+    msg=`Visual ${fmt(visual)}° → corroborado ${fmt(ang)}° → diferencia ${diff>=0?"+":""}${fmt(diff)}°`;
+    $("rfoCheckStatus").className=Math.abs(diff)<=2 ? "status on" : "status";
+    // Feed the corroborated value into MOTOR only when the user hasn't entered one.
+    const motor=$("rfoMotor");
+    if(motor && !ok(num("rfoMotor"))) motor.value=fmt(ang);
+  }
+  $("rfoCheckStatus").textContent=msg;
+  updateRfoVisual();
+  return ang;
 }
 function ubhoCalc(){
   const c=num("ubhoCirc");
-  const checked=rfoCheckedAngle;
-  const visual=num("rfoAngle");
-  const manual=num("ubhoAngle");
-  const a=ok(checked)?checked:(ok(manual)?manual:visual);
-  if($('ubhoAngle')&&ok(a)&&!ok(manual)) $('ubhoAngle').value=a.toFixed(2);
-  const r=(ok(a)&&ok(c)&&c>0)?c*a/360:NaN;
-  $("ubhoResult").textContent=ok(r)?fmt(r,2):"—";
-  $("rfoTotal").textContent=ok(r)?fmt(r,2):"—";
-  rfoDraw(a,"UBHO");
+  let a=num("ubhoAngle");
+  const checked=num("rfoCheckAngle");
+  if(!ok(a) && ok(checked)) a=checked;
+  if($("ubhoAngle") && ok(checked) && !ok(num("ubhoAngle"))) $("ubhoAngle").value=fmt(checked);
+  const r=(ok(c)&&ok(a)) ? c*a/360 : NaN;
+  $("ubhoResult").textContent=fmt(r);
+  const main=rfoMain();
+  $("rfoTotal").textContent=fmt(ok(r)?r:main);
+  // If UBHO angle input is blank, also use the corroborated angle for the green marker.
+  if($("rfoUbho") && !ok(num("rfoUbho")) && ok(a)) $("rfoUbho").value=fmt(a);
+  updateRfoVisual();
   return r;
 }
+
+function polarPoint(angleDeg, radius=112){
+  const a=(Number(angleDeg)-0)*Math.PI/180;
+  // 0° is straight up; positive angles rotate clockwise.
+  return {x:160+radius*Math.sin(a), y:160-radius*Math.cos(a)};
+}
+function setRfoElement(prefix, angle){
+  const g=$(prefix==="mwd"?"rfoMwdG":prefix==="motor"?"rfoMotorG":"rfoUbhoG");
+  const line=$(prefix==="mwd"?"rfoMwdLine":prefix==="motor"?"rfoMotorLine":"rfoUbhoLine");
+  const point=$(prefix==="mwd"?"rfoMwdPoint":prefix==="motor"?"rfoMotorPoint":"rfoUbhoPoint");
+  const label=$(prefix==="mwd"?"rfoMwdLabel":prefix==="motor"?"rfoMotorLabel":"rfoUbhoLabel");
+  if(!g||!line||!point||!label) return;
+  if(!ok(angle)){ g.style.display="none"; return; }
+  g.style.display="";
+  const p=polarPoint(((angle%360)+360)%360);
+  line.setAttribute("x2",p.x.toFixed(2)); line.setAttribute("y2",p.y.toFixed(2));
+  point.setAttribute("cx",p.x.toFixed(2)); point.setAttribute("cy",p.y.toFixed(2));
+  const dx=p.x>=160?8:-8;
+  label.setAttribute("x",(p.x+dx).toFixed(2));
+  label.setAttribute("y",(p.y-6).toFixed(2));
+  label.textContent=(prefix==="mwd"?"MWD ":prefix==="motor"?"MOTOR ":"UBHO ")+fmt(((angle%360)+360)%360)+"°";
+}
+function updateRfoVisual(){
+  const visual=num("rfoAngle"), checked=num("rfoCheckAngle");
+  let motor=num("rfoMotor");
+  // Motor is the key directional element. If its dedicated value is blank,
+  // use the corroborated angle, then the visual angle.
+  if(!ok(motor)) motor=ok(checked)?checked:visual;
+  const mwd=num("rfoMwd"), ubho=num("rfoUbho");
+  setRfoElement("mwd",mwd);
+  setRfoElement("motor",motor);
+  setRfoElement("ubho",ubho);
+  const title=$("rfoVizAngle");
+  if(title) title.textContent=ok(motor) ? `Motor ${fmt(((motor%360)+360)%360)}°` : "—";
+  const al=$("rfoAngleLabel");
+  if(al) al.textContent=ok(motor) ? `Motor ${fmt(((motor%360)+360)%360)}°` : "Motor —°";
+}
+
 function rfoCalcLive(){
   if($("rfoAngle")&&$("rfoCirc")) rfoMain();
   if($("rfoArc")&&$("rfoCheckCirc") && ok(num("rfoArc")) && ok(num("rfoCheckCirc"))) rfoCheck();
@@ -601,13 +661,13 @@ function clearHistory() {
 document.addEventListener("input", (e) => {
   const id=e.target && e.target.id;
   if (["dls","slidePrev","target","stand"].includes(id)) motorCalc();
-  if (["rfoAngle","rfoCirc","rfoArc","rfoCheckCirc","ubhoAngle","ubhoCirc"].includes(id)) rfoCalcLive();
+  if (["rfoAngle","rfoCirc","rfoArc","rfoCheckCirc","ubhoAngle","ubhoCirc","rfoMwd","rfoMotor","rfoUbho"].includes(id)) rfoCalcLive();
 });
 
 document.addEventListener("change", (e) => {
   const id=e.target && e.target.id;
   if (["dls","slidePrev","target","stand"].includes(id)) motorCalc();
-  if (["rfoAngle","rfoCirc","rfoArc","rfoCheckCirc","ubhoAngle","ubhoCirc"].includes(id)) rfoCalcLive();
+  if (["rfoAngle","rfoCirc","rfoArc","rfoCheckCirc","ubhoAngle","ubhoCirc","rfoMwd","rfoMotor","rfoUbho"].includes(id)) rfoCalcLive();
 });
 
 document.addEventListener("click", (e) => {
