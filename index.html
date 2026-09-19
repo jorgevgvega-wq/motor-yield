@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#061018">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>JV Drilling Field Tools V6.0</title>
+<style>
+:root{--blue:#1688ff;--bg:#061018;--panel:#0b1a24;--card:#0e202c;--line:#234052;--muted:#8da3b2;--green:#18c77a;--amber:#f1c21b;--red:#ff4248}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#f4f8fb;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding-bottom:76px}
+header{position:sticky;top:0;z-index:20;background:#061018;border-bottom:1px solid #163040;padding:8px 14px}
+.brand{display:flex;align-items:center;gap:10px}.logo{width:42px;height:42px;border-radius:12px;background:#102536 url("icon-192.png") center/cover no-repeat;display:grid;place-items:center;font-weight:900;color:transparent;border:1px solid #234052}.brand b{font-size:15px}.brand span{display:block;color:var(--muted);font-size:9px}
+main{max-width:760px;margin:auto;padding:13px 14px 25px;min-height:calc(100vh - 132px)}.tab{display:none;min-height:calc(100vh - 132px);padding-bottom:18px}.tab.active{display:block}
+.page-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:2px 2px 16px}.page-head h1{font-size:27px;line-height:1;margin:0 0 5px}.page-head p{margin:0;color:var(--muted);font-size:13px}.eyebrow{font-size:9px;color:#5e88a2;font-weight:900;letter-spacing:.12em;margin-bottom:6px}
+.head-actions{display:flex;gap:7px}.icon-btn,.avatar{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:#fff;display:grid;place-items:center}.avatar{font-size:11px;font-weight:900;background:#17344a}
+.card,.panel,.lesson-card{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:13px;margin:10px 0}.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+label{display:block;font-size:10px;color:#9cb1be;font-weight:800;margin:8px 0 4px}input,select,textarea{width:100%;background:#091722;border:1px solid #294858;color:#fff;border-radius:9px;padding:10px;font-size:14px;outline:none}textarea{min-height:90px;resize:vertical}
+button{font:inherit;cursor:pointer}.primary{border:0;border-radius:11px;background:linear-gradient(180deg,#1990ff,#0877e7);color:#fff;padding:12px 15px;font-weight:900}.primary-wide{width:100%;margin:11px 0}.secondary{border:1px solid #294858;background:#0d202c;color:#c4d3dc;border-radius:9px;padding:9px 11px;font-size:11px;font-weight:800}.danger{color:#ff777b}.muted,.small{color:var(--muted);font-size:10px}.redline{height:3px;background:var(--blue);border-radius:3px;margin:8px 0 12px}
+.kicker{display:inline-block;background:#102d42;color:#6bbaff;border-radius:999px;padding:5px 8px;font-size:9px;font-weight:900}.row{display:flex;justify-content:space-between;align-items:center;gap:8px}.out{background:#0d202c;border:1px solid #294858;border-radius:11px;padding:10px;margin-top:8px}.lbl{font-size:9px;text-transform:uppercase;color:#7892a4;font-weight:900}.val{font-size:23px;font-weight:900;margin-top:3px}.unit{font-size:10px;color:var(--muted)}
+.cl-filters{display:grid;grid-template-columns:1fr 1fr;gap:8px}.cl-context{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:9px}.cl-context label{margin:0 0 3px;font-size:9px}.cl-context select,.cl-context input{border:0;padding:0;background:transparent;font-size:12px;font-weight:800}
+.section-title{font-size:18px;font-weight:900}.section-title b{background:#263b4b;border-radius:999px;padding:3px 8px;font-size:11px}.pending-head{display:flex;justify-content:space-between;align-items:end;margin:13px 2px 9px}.sort{width:auto;font-size:10px;padding:8px}
+.tabs{display:flex;gap:3px;background:#08141d;border:1px solid var(--line);padding:3px;border-radius:11px}.tabs button{flex:1;background:transparent;border:0;color:#7891a1;border-radius:8px;padding:8px 3px;font-size:10px;font-weight:800}.tabs button.active{background:var(--blue);color:#fff}
+.priority{display:flex;gap:6px;overflow:auto;padding:7px 0}.priority button{white-space:nowrap;border:1px solid var(--line);background:var(--panel);color:#9db0bd;border-radius:999px;padding:7px 10px;font-size:10px}.priority button.active{color:#fff;border-color:var(--blue);background:#102d42}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}.hi{background:#ff3b3b}.med{background:#f2c51a}.lo{background:#18c77a}
+.task-list{display:grid;gap:7px}.task{position:relative;display:grid;grid-template-columns:27px 1fr auto;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:11px 9px 11px 13px;overflow:hidden}.task:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:#687}.task.high:before{background:#ff3b3b}.task.medium:before{background:#f2c51a}.task.low:before{background:#18c77a}.check{width:24px;height:24px;border:2px solid #7691a1;border-radius:7px;background:transparent;color:#fff}.check.done{background:var(--blue);border-color:var(--blue)}.task strong{font-size:12px;line-height:1.3}.done{text-decoration:line-through;color:#718795}.meta{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}.badge{background:#142b39;border-radius:6px;padding:4px 6px;font-size:8px;font-weight:800;color:#a9c4d3}.ph{background:#36191e;color:#ff777b}.pm{background:#382f12;color:#f6d65b}.pl{background:#123126;color:#62dca2}.pcat{background:#18253d;color:#82adff}.date{font-size:9px;color:#8da2af;margin-top:5px}.toast{position:fixed;left:50%;bottom:82px;transform:translateX(-50%) translateY(12px);background:#102735;border:1px solid #31566b;color:#fff;border-radius:11px;padding:10px 13px;font-size:11px;font-weight:800;opacity:0;pointer-events:none;transition:.2s;z-index:50;max-width:calc(100vw - 28px);text-align:center}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}.mini{border:1px solid #294858;background:#0d202c;color:#b5c7d2;border-radius:8px;width:31px;height:31px}.add-pending{margin:10px 0 4px}.inline-create{display:none}.inline-create.open{display:block}.activity{display:grid;grid-template-columns:1fr 110px 38px;gap:7px;margin-top:7px}
+.empty{border:1px dashed #315366;border-radius:12px;text-align:center;padding:25px 12px;color:#8098a7;font-size:11px}
+.create{display:none}.create.open{display:block}.activity{display:grid;grid-template-columns:1fr 85px 30px;gap:5px;margin:6px 0}.form-actions{display:flex;justify-content:flex-end;gap:6px;margin-top:11px}
+.lesson-toolbar{display:grid;grid-template-columns:1fr 1fr;gap:7px}.lesson-toolbar .wide{grid-column:1/-1}.lesson-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:9px 0}.stat{background:var(--panel);border:1px solid var(--line);border-radius:11px;text-align:center;padding:9px}.stat b{display:block;font-size:18px}.stat span{font-size:8px;color:var(--muted)}
+.lesson-card{padding:0;overflow:hidden}.lesson-card summary{padding:12px;cursor:pointer;list-style:none}.lesson-card summary::-webkit-details-marker{display:none}.lesson-body{border-top:1px solid var(--line);padding:11px;font-size:11px;line-height:1.5;color:#b8c8d1}.lesson-body h5{margin:9px 0 3px;color:#6f94a9;font-size:8px;text-transform:uppercase}.tag{display:inline-block;background:#162c3b;color:#8fc8ef;border-radius:999px;padding:4px 6px;margin:2px;font-size:8px}
+.nav{position:fixed;bottom:0;left:0;right:0;z-index:30;background:#061018;border-top:1px solid #1e3a4a;min-height:70px;padding:5px 4px calc(5px + env(safe-area-inset-bottom));display:flex}.nav button{flex:1;border:0;background:transparent;color:#70899a;font-size:8px;padding:4px 1px}.nav button.active{color:#fff}.nav i{display:block;font-style:normal;font-size:16px;margin-bottom:2px}.nav button.active i{color:var(--blue)}
+@media(max-width:430px){.grid,.cl-filters,.lesson-toolbar{grid-template-columns:1fr}.grid3{grid-template-columns:1fr 1fr}.activity{grid-template-columns:1fr 30px}.activity select{grid-column:1}.activity .del{grid-column:2;grid-row:1/3}}
+</style>
+</head>
+<body>
+<header><div class="brand"><div class="logo">JV</div><div><b>JV DRILLING</b><span>Motor Yield • RFO • Directional Field Tools</span></div></div></header>
+<main>
+
+<section id="checklists" class="tab active">
+<div class="page-head"><div><div class="eyebrow">JV DRILLING • FIELD TOOLS</div><h1>Checklist</h1><p>Organiza · Da seguimiento · Cumple</p></div><div class="head-actions"><span class="avatar">JV</span></div></div>
+<div class="cl-filters"><div class="cl-context"><label>Pozo actual</label><select id="well"></select></div><div class="cl-context"><label>Fecha</label><input id="today" type="date"></div></div>
+<div class="pending-head"><div><div class="section-title">✓ Pendientes <b id="count">0</b></div><div class="small">Todo lo que todavía necesita tu atención</div></div><select class="sort" id="sort"><option value="urgent">Más urgente</option><option value="date">Fecha</option><option value="priority">Prioridad</option></select></div>
+<div class="tabs"><button class="active" data-view="pending">Pendientes <span id="np">0</span></button><button data-view="done">Completados <span id="nd">0</span></button><button data-view="all">Todos <span id="na">0</span></button></div>
+<div class="priority"><button class="active" data-pr="all">Todos</button><button data-pr="high"><i class="dot hi"></i>Alta</button><button data-pr="medium"><i class="dot med"></i>Media</button><button data-pr="low"><i class="dot lo"></i>Baja</button></div>
+<div id="tasks" class="task-list"></div>
+<button class="secondary primary-wide add-pending" id="addPending">＋ Agregar pendiente al pozo actual</button>
+<div class="card inline-create" id="pendingPanel"><div class="section-title">＋ Nuevo pendiente</div><div class="small" id="pendingContext">Se agregará al pozo actual.</div>
+<div class="grid"><div><label>Pendiente *</label><input id="pendingName" placeholder="Ej. Revisar BHA antes de correr"></div><div><label>Categoría</label><select id="pendingCat"><option>General</option><option>Herramientas</option><option>Permisos</option><option>Documentación</option><option>Operación</option><option>Seguridad</option></select></div></div>
+<div class="grid"><div><label>Prioridad</label><select id="pendingPriority"><option value="high">Alta</option><option value="medium" selected>Media</option><option value="low">Baja</option></select></div><div><label>Fecha</label><input id="pendingDate" type="date"></div></div>
+<div class="grid"><div><label>Lista / checklist</label><input id="pendingList" placeholder="Ej. Pre-trip, Corrida..."></div><div></div></div>
+<div class="form-actions"><button class="secondary" id="cancelPending">Cancelar</button><button class="primary" id="savePending">＋ Guardar pendiente</button></div></div>
+<button class="primary primary-wide" id="newChecklist">＋ Nuevo checklist</button>
+<div class="card create" id="createPanel"><div class="row"><div><div class="section-title">＋ Crear nuevo checklist</div><div class="small">Crea la lista y sus actividades de una sola vez.</div></div><button class="secondary" id="template">▣ Plantilla</button></div>
+<div class="grid"><div><label>Nombre *</label><input id="listName" placeholder="Pre-trip, Corrida, Inspecciones..."></div><div><label>Descripción</label><input id="listDesc" placeholder="Objetivo o contexto"></div></div>
+<div class="grid"><div><label>Pozo</label><select id="newWell"></select><input id="newWellName" class="inline-create" style="margin-top:7px" placeholder="Nombre del nuevo pozo, ej. PCND-0725"></div><div><label>Categoría</label><select id="newCat"><option>General</option><option>Herramientas</option><option>Permisos</option><option>Documentación</option><option>Operación</option><option>Seguridad</option></select></div></div>
+<div class="row" style="margin-top:12px"><b>Actividades</b><button class="secondary" id="addActivity">＋ Agregar</button></div><div id="activities"></div><button class="secondary" style="width:100%;margin-top:6px" id="addActivity2">＋ Agregar otra actividad</button>
+<div class="form-actions"><button class="secondary" id="cancelCreate">Cancelar</button><button class="primary" id="saveCreate">▣ Guardar checklist</button></div></div>
+</section>
+
+<section id="motor" class="tab">
+<div class="page-head"><div><div class="eyebrow">JV DRILLING • CALCULATOR</div><h1>Motor Yield</h1><p>Slide planning de campo</p></div></div>
+<div class="card"><div class="row"><h3 style="margin:0">Motor Yield & Slide</h3><span class="kicker">PRINCIPAL</span></div><div class="redline"></div>
+<div class="grid"><div><label>DLS realizado (°/100 ft)</label><input id="dls" type="number" step=".01"></div><div><label>Pies deslizados (ft)</label><input id="slidePrev" type="number" step=".1"></div></div>
+<div class="out"><div class="lbl">Motor Yield</div><div class="val" id="yield">—</div><div class="unit">°/100 ft de slide</div></div><button class="secondary" id="saveMotor" style="margin-top:9px;width:100%">Guardar cálculo</button></div>
+<div class="card"><h3>Siguiente Slide</h3><div class="grid"><div><label>DLS objetivo</label><input id="target" type="number" step=".01"></div><div><label>Longitud del stand</label><input id="stand" type="number" step=".1"></div></div><div class="grid"><div class="out"><div class="lbl">Slide recomendado</div><div class="val" id="slideRec">—</div><div class="unit">ft</div></div><div class="out"><div class="lbl">Rotary recomendado</div><div class="val" id="rotary">—</div><div class="unit">ft</div></div></div><div class="grid"><div class="out"><div class="lbl">Slide %</div><div class="val" id="slidePct">—</div></div><div class="out"><div class="lbl">DLS esperado</div><div class="val" id="dlsExpected">—</div></div></div></div>
+</section>
+
+<section id="rfo" class="tab">
+<div class="page-head"><div><div class="eyebrow">JV DRILLING • FIELD TOOL</div><h1>RFO</h1><p>Rotary / Reference Offset</p></div></div>
+<div class="card"><h3>RFO Angle</h3><div class="grid"><div><label>Arco medido</label><input id="rfoArc" type="number" step=".01"></div><div><label>Circunferencia</label><input id="rfoCirc" type="number" step=".01"></div></div><div class="out"><div class="lbl">Ángulo</div><div class="val" id="rfoAngle">—</div><div class="unit">degrees</div></div><button class="secondary" id="saveRfo" style="margin-top:9px;width:100%">Guardar cálculo</button><p class="small">Ángulo = arco ÷ circunferencia × 360°.</p></div>
+</section>
+
+<section id="survey" class="tab">
+<div class="page-head"><div><div class="eyebrow">JV DRILLING • DIRECTIONAL</div><h1>Survey</h1><p>DLS, build y turn</p></div></div>
+<div class="card"><div class="grid"><div><label>MD1</label><input id="md1" type="number"></div><div><label>MD2</label><input id="md2" type="number"></div><div><label>Inc1</label><input id="inc1" type="number"></div><div><label>Inc2</label><input id="inc2" type="number"></div><div><label>Azi1</label><input id="azi1" type="number"></div><div><label>Azi2</label><input id="azi2" type="number"></div></div><button class="primary primary-wide" id="surveyCalc">Calcular Survey</button><div class="grid3"><div class="out"><div class="lbl">DLS</div><div class="val" id="qDls">—</div></div><div class="out"><div class="lbl">Build</div><div class="val" id="qBuild">—</div></div><div class="out"><div class="lbl">Turn</div><div class="val" id="qTurn">—</div></div></div></div>
+</section>
+
+<section id="lessons" class="tab">
+<div class="page-head"><div><div class="eyebrow">JV DRILLING • KNOWLEDGE BASE</div><h1>Lessons</h1><p>Lecciones aprendidas por pozo</p></div><span class="avatar">JV</span></div>
+<div class="lesson-toolbar"><select id="lessonWellFilter"><option value="all">Todos los pozos</option><option>PCND-0371</option><option>PCND-0420</option><option>PCND-0187</option><option>PCND-0552</option><option>PCND-0661</option></select><select id="lessonCatFilter"><option value="all">Todas las categorías</option><option>Motor</option><option>MWD/LWD</option><option>Direccional</option><option>Hidráulica</option><option>Formación</option><option>Operación</option><option>Seguridad</option></select><input class="wide" id="lessonSearch" placeholder="Buscar lección, pozo o palabra clave..."></div>
+<div class="lesson-stats"><div class="stat"><b id="lessonCount">0</b><span>Lecciones</span></div><div class="stat"><b id="lessonWellCount">0</b><span>Pozos</span></div><div class="stat"><b id="lessonTagCount">0</b><span>Temas</span></div></div>
+<div id="lessonsArea"></div><button class="primary primary-wide" id="newLesson">＋ Agregar lección</button>
+<div class="card create" id="lessonPanel"><div class="section-title">＋ Nueva lección</div><div class="small">Guarda lo que aprendiste para encontrarlo en otro pozo.</div>
+<div class="grid"><div><label>Pozo *</label><select id="lessonWell"><option>PCND-0371</option><option>PCND-0420</option><option>PCND-0187</option><option>PCND-0552</option><option>PCND-0661</option></select></div><div><label>Categoría *</label><select id="lessonCategory"><option>Motor</option><option>MWD/LWD</option><option>Direccional</option><option>Hidráulica</option><option>Formación</option><option>Operación</option><option>Seguridad</option></select></div></div>
+<label>Título *</label><input id="lessonTitle" placeholder="Ej. El motor perdió yield después de..."><label>Qué pasó / contexto</label><textarea id="lessonBody" placeholder="Datos, condiciones, parámetros..."></textarea><label>Qué aprendí / qué haría diferente</label><textarea id="lessonAction" placeholder="La lección que quieres conservar..."></textarea><label>Etiquetas</label><input id="lessonTags" placeholder="motor, yield, slide"><div class="form-actions"><button class="secondary" id="cancelLesson">Cancelar</button><button class="primary" id="saveLesson">Guardar lección</button></div></div>
+</section>
+
+<section id="history" class="tab"><div class="page-head"><div><div class="eyebrow">JV DRILLING • RECORDS</div><h1>History</h1><p>Historial de cálculos</p></div></div><div class="card"><div class="small">El historial se guarda localmente en este dispositivo. Se conservan hasta 100 registros.</div><div id="historyArea" style="margin-top:10px"></div><button class="secondary danger" id="clearHistory">Borrar historial</button></div></section>
+
+</main><div id="toast" class="toast"></div>
+<nav class="nav"><button class="active" data-tab="checklists"><i>☑</i>Checklist</button><button data-tab="motor"><i>◴</i>Motor</button><button data-tab="rfo"><i>▤</i>RFO</button><button data-tab="survey"><i>⌖</i>Survey</button><button data-tab="lessons"><i>💡</i>Lessons</button><button data-tab="history"><i>▥</i>History</button></nav>
+
+<script>
+const $=id=>document.getElementById(id), esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2);
+const today=()=>{let d=new Date(),off=d.getTimezoneOffset(),local=new Date(d.getTime()-off*60000);return local.toISOString().slice(0,10)};
+let view="pending",priority="all";
+let tasks=JSON.parse(localStorage.getItem("jv_tasks_v59")||"null")||[
+{id:uid(),name:"Escanear stab faltante en los fishing",well:"PCND-0371",cat:"Herramientas",priority:"high",done:false,date:today(),list:"Pendientes de campo"},
+{id:uid(),name:"Descargar inspecciones de htas (falta stab)",well:"PCND-0371",cat:"Herramientas",priority:"medium",done:false,date:today(),list:"Pendientes de campo"},
+{id:uid(),name:"Check list de corridas",well:"PCND-0371",cat:"Operación",priority:"high",done:false,date:today(),list:"Corrida"},
+{id:uid(),name:"Permiso de trabajo cerrar y escanear",well:"PCND-0371",cat:"Permisos",priority:"low",done:false,date:today(),list:"Permisos"},
+{id:uid(),name:"Checar que tenemos todas las htas para el MARSS",well:"PCND-0371",cat:"Herramientas",priority:"medium",done:false,date:today(),list:"MARSS"}
+];
+let wells=JSON.parse(localStorage.getItem("jv_wells_v1")||"null")||["PCND-0371","PCND-0420","PCND-0187","PCND-0552","PCND-0661"];
+function saveWells(){localStorage.setItem("jv_wells_v1",JSON.stringify(wells))}
+function renderWellSelects(){
+ const current=$("well").value;
+ $("well").innerHTML=wells.map(w=>`<option>${esc(w)}</option>`).join("")+`<option value="__new__">＋ Nuevo pozo...</option>`;
+ if(current&&wells.includes(current))$("well").value=current;
+ $("newWell").innerHTML=wells.map(w=>`<option>${esc(w)}</option>`).join("")+`<option value="__new__">＋ Crear nuevo pozo...</option>`;
+ const nw=$("newWell"); if(current&&wells.includes(current))nw.value=current;
+}
+function addWell(name){name=name.trim();if(!name)return false;if(wells.some(w=>w.toLowerCase()===name.toLowerCase())){alert("Ese pozo ya existe.");return false}wells.push(name);saveWells();renderWellSelects();$("well").value=name;$("newWell").value=name;return true}
+let lessons=JSON.parse(localStorage.getItem("jv_lessons_v1")||"[]");
+function saveTasks(){localStorage.setItem("jv_tasks_v59",JSON.stringify(tasks))}
+function saveLessons(){localStorage.setItem("jv_lessons_v1",JSON.stringify(lessons))}
+function renderTasks(){
+ let w=$("well").value,sort=$("sort").value,a=tasks.filter(t=>t.well===w);
+ if(view==="pending")a=a.filter(t=>!t.done);if(view==="done")a=a.filter(t=>t.done);if(priority!=="all")a=a.filter(t=>t.priority===priority);
+ let r={high:0,medium:1,low:2};
+ a.sort((x,y)=>sort==="priority"?r[x.priority]-r[y.priority]:sort==="date"?String(y.date||"").localeCompare(String(x.date||"")):r[x.priority]-r[y.priority]);
+ $("count").textContent=tasks.filter(t=>!t.done&&t.well===w).length;$("np").textContent=tasks.filter(t=>!t.done&&t.well===w).length;$("nd").textContent=tasks.filter(t=>t.done&&t.well===w).length;$("na").textContent=tasks.filter(t=>t.well===w).length;
+ $("tasks").innerHTML=a.length?a.map(t=>`<div class="task ${t.priority}"><button class="check ${t.done?"done":""}" data-task="${t.id}">${t.done?"✓":""}</button><div><strong class="${t.done?"done":""}">${esc(t.name)}</strong><div class="meta"><span class="badge ${t.priority==="high"?"ph":t.priority==="medium"?"pm":"pl"}">● ${t.priority==="high"?"Alta":t.priority==="medium"?"Media":"Baja"}</span><span class="badge pcat">${esc(t.cat)}</span>${t.list?`<span class="badge">${esc(t.list)}</span>`:""}</div><div class="date">${esc(t.well)}${t.date?" • "+esc(t.date):""}</div></div><button class="mini" data-del="${t.id}" aria-label="Eliminar actividad">×</button></div>`).join(""):`<div class="empty">✓<br><br>No hay pendientes con estos filtros.</div>`;
+}
+function addActivity(){
+ $("activities").insertAdjacentHTML("beforeend",`<div class="activity"><input class="actName" placeholder="Nueva actividad..."><select class="actPriority"><option value="high">Alta</option><option value="medium" selected>Media</option><option value="low">Baja</option></select><button class="secondary delAct">×</button></div>`);
+}
+function renderLessons(){
+ let wf=$("lessonWellFilter").value,cf=$("lessonCatFilter").value,q=$("lessonSearch").value.toLowerCase();
+ let a=lessons.filter(x=>(wf==="all"||x.well===wf)&&(cf==="all"||x.cat===cf)&&(!q||(x.title+x.body+x.action+x.tags.join(" ")+x.well).toLowerCase().includes(q)));
+ $("lessonCount").textContent=lessons.length;$("lessonWellCount").textContent=new Set(lessons.map(x=>x.well)).size;$("lessonTagCount").textContent=new Set(lessons.flatMap(x=>x.tags)).size;
+ $("lessonsArea").innerHTML=a.length?a.map(x=>`<details class="lesson-card"><summary><b>${esc(x.title)}</b><div class="meta"><span class="badge pcat">${esc(x.cat)}</span><span class="badge">${esc(x.well)}</span></div></summary><div class="lesson-body"><h5>Contexto</h5><div>${esc(x.body||"Sin contexto registrado.")}</div><h5>Qué aprendí</h5><div>${esc(x.action||"Sin acción registrada.")}</div><h5>Temas</h5><div>${x.tags.map(t=>`<span class="tag">#${esc(t)}</span>`).join("")}</div><div class="form-actions"><button class="secondary danger" data-del-lesson="${x.id}">Eliminar</button></div></div></details>`).join(""):`<div class="empty">💡<br><br>No hay lecciones con estos filtros.<br>Agrega la primera y empieza tu biblioteca de campo.</div>`;
+}
+let toastTimer;function showToast(msg){let t=$("toast");if(!t)return;t.textContent=msg;t.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove("show"),2200)}
+function motorCalc(){
+ let d=+$("dls").value,s=+$("slidePrev").value,t=+$("target").value,st=+$("stand").value;
+ let y=s>0&&d>=0?d/(s/100):NaN,slide=y>0&&t>=0?t/y*100:NaN,rot=st>0&&Number.isFinite(slide)?Math.max(st-slide,0):NaN;
+ $("yield").textContent=Number.isFinite(y)?y.toFixed(2):"—";$("slideRec").textContent=Number.isFinite(slide)?slide.toFixed(1):"—";$("rotary").textContent=Number.isFinite(rot)?rot.toFixed(1):"—";$("slidePct").textContent=Number.isFinite(slide)&&st>0?(slide/st*100).toFixed(1)+"%":"—";$("dlsExpected").textContent=Number.isFinite(y)&&Number.isFinite(slide)?(y*slide/100).toFixed(2):"—";
+}
+function rfoCalc(){let a=+$("rfoArc").value,b=+$("rfoCirc").value;$("rfoAngle").textContent=b>0&&a>=0?((a/b)*360).toFixed(2)+"°":"—"}
+function surveyCalc(){
+ let m1=+$("md1").value,m2=+$("md2").value,i1=+$("inc1").value,i2=+$("inc2").value,a1=+$("azi1").value,a2=+$("azi2").value,d=m2-m1;
+ if(!(d>0)||[m1,m2,i1,i2,a1,a2].some(x=>!Number.isFinite(x))){["qDls","qBuild","qTurn"].forEach(id=>$(id).textContent="—");showToast("Revisa MD, Inc y Azi antes de calcular");return null}
+ let r=x=>x*Math.PI/180,c=Math.cos(r(i1))*Math.cos(r(i2))+Math.sin(r(i1))*Math.sin(r(i2))*Math.cos(r(a2-a1)),dog=Math.acos(Math.max(-1,Math.min(1,c)))*180/Math.PI;
+ let dls=dog/d*100,build=(i2-i1)/d*100,da=((a2-a1+540)%360)-180,turn=da/d*100;
+ $("qDls").textContent=dls.toFixed(2);$("qBuild").textContent=build.toFixed(2);$("qTurn").textContent=turn.toFixed(2);return {dls,build,turn};
+}
+function renderHistory(){let h=JSON.parse(localStorage.getItem("jv_hist_v1")||"[]");$("historyArea").innerHTML=h.length?h.map(x=>`<div class="out"><b>${esc(x.type)}</b><div class="small">${esc(x.text)}</div><div class="date">${esc(x.date||"")}</div></div>`).join(""):`<div class="empty">No hay cálculos guardados.</div>`}
+function hist(type,text){let h=JSON.parse(localStorage.getItem("jv_hist_v1")||"[]");h.unshift({type,text,date:new Date().toLocaleString()});localStorage.setItem("jv_hist_v1",JSON.stringify(h.slice(0,100)));renderHistory()}
+document.addEventListener("change",e=>{
+ if(e.target.id==="well"&&e.target.value==="__new__"){let n=prompt("Nombre del nuevo pozo:","PCND-");if(n&&addWell(n)){renderWellSelects();$("well").value=n;renderTasks()}else{$("well").value=wells[0]||"";renderTasks()}return}
+ if(e.target.id==="newWell"&&e.target.value==="__new__"){$("newWellName").classList.add("open");$("newWellName").focus();return}
+ if(e.target.id==="newWell"){$("newWellName").classList.remove("open");}
+});
+document.addEventListener("click",e=>{
+ let b=e.target.closest("[data-tab]");if(b){document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));$(b.dataset.tab).classList.add("active");scrollTo(0,0);return}
+ b=e.target.closest("[data-view]");if(b){document.querySelectorAll("[data-view]").forEach(x=>x.classList.remove("active"));b.classList.add("active");view=b.dataset.view;renderTasks();return}
+ b=e.target.closest("[data-pr]");if(b){document.querySelectorAll("[data-pr]").forEach(x=>x.classList.remove("active"));b.classList.add("active");priority=b.dataset.pr;renderTasks();return}
+ b=e.target.closest("[data-task]");if(b){let t=tasks.find(x=>x.id===b.dataset.task);if(t)t.done=!t.done;saveTasks();renderTasks();return}
+ b=e.target.closest("[data-del]");if(b){if(!confirm("¿Eliminar esta actividad?"))return;tasks=tasks.filter(x=>x.id!==b.dataset.del);saveTasks();renderTasks();return}
+ if(e.target.closest("#notify")){showToast("Las notificaciones del sistema se integrarán en la siguiente fase");return}
+ if(e.target.closest("#addPending")){$("pendingPanel").classList.add("open");$("pendingContext").textContent=`Se agregará al pozo actual: ${$("well").value}`;$("pendingDate").value=$("today").value||today();$("pendingName").focus();return}
+ if(e.target.closest("#cancelPending")){$("pendingPanel").classList.remove("open");$("pendingName").value="";$("pendingList").value="";return}
+ if(e.target.closest("#savePending")){let name=$("pendingName").value.trim(),w=$("well").value;if(!name||!w||w==="__new__"){alert("Escribe el pendiente y selecciona un pozo actual.");return}tasks.push({id:uid(),name,well:w,cat:$("pendingCat").value,priority:$("pendingPriority").value,done:false,date:$("pendingDate").value||today(),list:$("pendingList").value.trim()||"Pendientes"});saveTasks();$("pendingPanel").classList.remove("open");$("pendingName").value="";$("pendingList").value="";showToast("Pendiente agregado al pozo actual");renderTasks();return}
+ if(e.target.closest("#newChecklist")){$("createPanel").classList.add("open");if(!$("activities").children.length)addActivity();return}
+ if(e.target.closest("#cancelCreate")){$("createPanel").classList.remove("open");$("activities").innerHTML="";$("listName").value="";$("listDesc").value="";return}
+ if(e.target.closest("#addActivity")||e.target.closest("#addActivity2")){addActivity();return}
+ if(e.target.closest(".delAct")){e.target.closest(".activity").remove();return}
+ if(e.target.closest("#template")){$("activities").innerHTML="";["Verificar BHA y herramientas","Confirmar permisos de trabajo","Revisar parámetros y límites","Validar comunicación con MWD/LWD","Cerrar documentación de la corrida"].forEach((n,i)=>{addActivity();let r=$("activities").lastElementChild;r.querySelector(".actName").value=n;if(i===1)r.querySelector(".actPriority").value="high"});$("listName").value="Pre-trip / Corrida";$("newCat").value="Operación";showToast("Plantilla cargada: 5 actividades");return}
+ if(e.target.closest("#saveCreate")){let name=$("listName").value.trim(),rows=[...document.querySelectorAll(".activity")],valid=rows.map(r=>r.querySelector(".actName").value.trim()).filter(Boolean),w=$("newWell").value;if(w==="__new__"){w=$("newWellName").value.trim();if(!addWell(w))return;$("newWellName").value=""}if(!name||!valid.length){alert("Escribe un nombre y agrega al menos una actividad.");return}rows.forEach(r=>{let n=r.querySelector(".actName").value.trim();if(n)tasks.push({id:uid(),name:n,well:w,cat:$("newCat").value,priority:r.querySelector(".actPriority").value,done:false,date:$("today").value||today(),list:name})});saveTasks();$("createPanel").classList.remove("open");$("activities").innerHTML="";$("listName").value="";$("listDesc").value="";showToast(`Checklist guardado: ${name}`);renderTasks();return}
+ if(e.target.closest("#newLesson")){$("lessonPanel").classList.add("open");return}
+ if(e.target.closest("#cancelLesson")){$("lessonPanel").classList.remove("open");return}
+ if(e.target.closest("#saveLesson")){let title=$("lessonTitle").value.trim();if(!title){alert("Escribe un título.");return}lessons.unshift({id:uid(),well:$("lessonWell").value,cat:$("lessonCategory").value,title,body:$("lessonBody").value,action:$("lessonAction").value,tags:$("lessonTags").value.split(",").map(x=>x.trim()).filter(Boolean)});saveLessons();["lessonTitle","lessonBody","lessonAction","lessonTags"].forEach(id=>$(id).value="");$("lessonPanel").classList.remove("open");renderLessons();return}
+ b=e.target.closest("[data-del-lesson]");if(b){lessons=lessons.filter(x=>x.id!==b.dataset.delLesson);saveLessons();renderLessons();return}
+ if(e.target.closest("#saveMotor")){motorCalc();let y=$("yield").textContent;if(y!=="—")hist("Motor Yield","Yield "+y+" °/100 ft • Slide "+$("slideRec").textContent+" ft • Rotary "+$("rotary").textContent+" ft");else showToast("Completa los datos del Motor Yield");return}
+ if(e.target.closest("#saveRfo")){rfoCalc();let a=$("rfoAngle").textContent;if(a!=="—")hist("RFO","Ángulo "+a);else showToast("Completa arco y circunferencia");return}
+ if(e.target.closest("#surveyCalc")){let q=surveyCalc();if(q)hist("Survey","DLS "+q.dls.toFixed(2)+" • Build "+q.build.toFixed(2)+" • Turn "+q.turn.toFixed(2));return}
+ if(e.target.closest("#clearHistory")){localStorage.removeItem("jv_hist_v1");renderHistory()}
+});
+document.addEventListener("input",e=>{if(["dls","slidePrev","target","stand"].includes(e.target.id))motorCalc();if(["rfoArc","rfoCirc"].includes(e.target.id))rfoCalc();if(e.target.id==="lessonSearch")renderLessons()});
+document.addEventListener("change",e=>{if(["well","sort"].includes(e.target.id))renderTasks();if(["lessonWellFilter","lessonCatFilter"].includes(e.target.id))renderLessons()});
+$("today").value=today();renderWellSelects();$("today").value=today();$("pendingDate").value=today();renderTasks();renderLessons();renderHistory();
+</script>
+</body>
+</html>
